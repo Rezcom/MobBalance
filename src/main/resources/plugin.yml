@@ -1,0 +1,17 @@
+name: MobBalance
+version: '${project.version}'
+main: rezcom.mobbalance.Main
+api-version: 1.18
+commands:
+  MBNumChunk:
+    description: Returns number of chunks loaded in the hashmap.
+    usage: /MBNumChunk
+    permission: MobBalance.NumChunk
+  MBForcePurge:
+    description: Forces a purge of the chunks from the hashmap.
+    usage: /MBForcePurge
+    permission: MobBalance.ForcePurge
+  MBChunkInfo:
+    description: Provides the counter on the current chunk.
+    usage: /MBChunkInfo
+    permission: MobBalance.ChunkInfo
