@@ -1,11 +1,14 @@
 package rezcom.mobbalance.lootlimiter;
 
+import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import rezcom.mobbalance.Main;
@@ -18,8 +21,8 @@ import java.util.Random;
 
 public class LootLimiter implements Listener {
 
-	static private final boolean limiterDebug = false;
-
+	private static final boolean limiterDebug = false;
+	public static int maximumCounter = 60;
 	@EventHandler
 	void onNonAnimalDeath(EntityDeathEvent event){
 		LivingEntity livingEntity = event.getEntity();
@@ -36,7 +39,7 @@ public class LootLimiter implements Listener {
 			long chunkKey = event.getEntity().getChunk().getChunkKey();
 
 			Map<Long,Integer> curChunkMap = ChunkHandler.chunkCounters.get(worldKey);
-			ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,1,35);
+			ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,mobSpecificCounter(livingEntity),maximumCounter,true);
 
 			Integer numOfKills = curChunkMap.get(chunkKey);
 
@@ -48,11 +51,11 @@ public class LootLimiter implements Listener {
 				event.setDroppedExp(0);
 			}
 
-			if (numOfKills > 8 && numOfKills <= 11){
-				// If 9 or more kills, reduced drops
-				reduceItemStackList(event.getDrops(),0.3);
-			} else if (numOfKills > 11){
-				// If 12 or more kills, no drops.
+			if (numOfKills > 5 && numOfKills <= 7){
+				// If 7 or more kills, reduced drops
+				reduceItemStackList(event.getDrops(),0.4);
+			} else if (numOfKills > 7){
+				// If 8 or more kills, no drops.
 				event.getDrops().clear();
 			}
 
@@ -85,7 +88,7 @@ public class LootLimiter implements Listener {
 
 			if (livingEntity.getKiller() != null){
 				// Killer was a player and there's less than 7 kills in this chunk
-				ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,1,35);
+				ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,mobSpecificCounter(livingEntity), maximumCounter,true);
 				Integer numOfKills = curChunkMap.get(chunkKey);
 				if (numOfKills <= 7){
 					return;
@@ -98,6 +101,40 @@ public class LootLimiter implements Listener {
 
 			// Less Drops, 40% of drops on average
 			reduceItemStackList(event.getDrops(), 0.4);
+		}
+	}
+
+	@EventHandler
+	void onBlockEXP(BlockExpEvent event){
+		int dropExp = event.getExpToDrop();
+
+		NamespacedKey worldKey = event.getBlock().getWorld().getKey();
+		Map<Long,Integer> curChunkMap = ChunkHandler.chunkCounters.get(worldKey);
+		long chunkKey = event.getBlock().getChunk().getChunkKey();
+		if (dropExp > 45){
+			ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,dropExp <= 64 ? 1 : 2,maximumCounter,false);
+		} else {
+			ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,0,maximumCounter,false);
+		}
+		Integer numOfKills = curChunkMap.get(chunkKey);
+
+		if (numOfKills <= 10){
+			// EXP Allowed
+			event.setExpToDrop(Math.min(dropExp,160));
+		} else if (numOfKills <= 20) {
+			event.setExpToDrop(Math.min(dropExp / 2, 80));
+			// Half EXP Allowed
+		} else {
+			// No EXP Allowed
+			event.setExpToDrop(0);
+		}
+	}
+
+	private static int mobSpecificCounter(LivingEntity livingEntity){
+		if (livingEntity.getType() == EntityType.IRON_GOLEM){
+			return 3;
+		} else {
+			return 1;
 		}
 	}
 

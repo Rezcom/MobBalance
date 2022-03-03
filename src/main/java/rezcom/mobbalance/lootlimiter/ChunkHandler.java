@@ -12,7 +12,6 @@ import rezcom.mobbalance.Main;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class ChunkHandler implements Listener {
 
@@ -76,7 +75,7 @@ public class ChunkHandler implements Listener {
 		chunksMap.entrySet().removeIf(entry -> !chunkKeys.contains(entry.getKey()));
 
 		int after_removal = chunksMap.size();
-		Main.logger.log(Level.INFO,"Chunks removed from map: " + (original - after_removal));
+		//Main.logger.log(Level.INFO,"Chunks removed from map: " + (original - after_removal));
 	}
 
 	public static void decreaseAllOtherCounters(NamespacedKey worldKey, long chunkKey){
@@ -91,12 +90,14 @@ public class ChunkHandler implements Listener {
 		}
 	}
 
-	public static void updateChunkValue(Map<Long,Integer> chunkMap, NamespacedKey worldKey, long chunkKey,Integer amount,Integer max){
+	public static void updateChunkValue(Map<Long,Integer> chunkMap, NamespacedKey worldKey, long chunkKey,Integer amount,Integer max, boolean updateOthers){
 
 		// Call this early to ensure that the chunk key isn't null!!
 		// Updates a chunk value by the given amount, but not over a given maximum.
 		// Decreases all other chunks by 1
-		decreaseAllOtherCounters(worldKey,chunkKey);
+		if (updateOthers){
+			decreaseAllOtherCounters(worldKey,chunkKey);
+		}
 		if (chunkMap.containsKey(chunkKey)){
 			if (chunkMap.get(chunkKey) == null){
 				chunkMap.replace(chunkKey,1);

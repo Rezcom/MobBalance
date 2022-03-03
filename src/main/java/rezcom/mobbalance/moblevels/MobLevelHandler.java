@@ -1,7 +1,9 @@
 package rezcom.mobbalance.moblevels;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.metadata.MetadataValue;
 import rezcom.mobbalance.Main;
 
 import java.util.*;
@@ -10,6 +12,7 @@ import java.util.logging.Level;
 public class MobLevelHandler {
 
 	public static boolean crimsonNight = false;
+	public static boolean mobHandlerDebug = false;
 
 	// Spawn Reasons that would trigger levels
 	public static final ArrayList<CreatureSpawnEvent.SpawnReason> spawnReasons = new ArrayList<>(Arrays.asList(
@@ -25,8 +28,8 @@ public class MobLevelHandler {
 	// Probability Maps are in the form of the following:
 	// <Level of Mob, Probability%>
 	public static Map<Integer, Double> defaultProbs = new HashMap<Integer, Double>(){{
-		put(0, 0.21);
-		put(1, 0.17);
+		put(0, 0.215);
+		put(1, 0.179);
 		put(2, 0.15);
 		put(3, 0.13);
 		put(4, 0.10);
@@ -36,8 +39,8 @@ public class MobLevelHandler {
 		put(8, 0.03);
 		put(9, 0.02);
 		put(10,0.01);
-		put(11,0.01);
-		put(12,0.01);
+		put(11,0.005);
+		put(12,0.001);
 	}};
 
 	public static Map<Integer, Double> bloodProbs = new HashMap<Integer, Double>(){{
@@ -50,11 +53,30 @@ public class MobLevelHandler {
 		put(12,0.05);
 	}};
 
+	public static Map<Integer,Double> firstDebugProbs = new HashMap<Integer, Double>(){{
+		put(0,0.20);
+		put(1,0.20);
+		put(2,0.20);
+		put(3,0.20);
+		put(4,0.20);
+	}};
+
 	public static void determineEXP(EntityDeathEvent event){
 		// Please only call this if a player killed
 		// with 6 or less kills in the chunk counter.
 		// This method does NOT check that those conditions are fulfilled.
-
+		LivingEntity livingEntity = event.getEntity();
+		if (livingEntity.hasMetadata("Level")){
+			List<MetadataValue> metadataValueList = livingEntity.getMetadata("Level");
+			MetadataValue value = metadataValueList.get(metadataValueList.size() - 1);
+			if (value.asInt() >= 3 && value.asInt() <= 5){
+				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 1.5));
+			} else if (value.asInt() > 5 && value.asInt() <= 9){
+				event.setDroppedExp(event.getDroppedExp() * 2);
+			} else if (value.asInt() > 9){
+				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 2.5));
+			}
+		}
 	}
 
 	private static boolean isValid(Map<Integer,Double> probMap){
@@ -62,7 +84,10 @@ public class MobLevelHandler {
 		for (Map.Entry<Integer,Double> entry : probMap.entrySet()){
 			sum += entry.getValue();
 		}
-		return sum == 1.0;
+		String resultSum = String.format("%.3f",sum);
+		//Main.logger.log(Level.INFO,"SUM: " + resultSum);
+		String correct = "1.000";
+		return correct.equals(resultSum);
 	}
 	public static Integer rollProbability(Map<Integer,Double> probMap){
 		if (!(isValid(probMap))){
@@ -78,12 +103,16 @@ public class MobLevelHandler {
 		Double base = 0.0;
 		Random random = new Random();
 		double result = random.nextDouble();
+		Main.sendDebugMessage("RESULT: " + result,mobHandlerDebug);
 		for (int i = 0; i < levels.size(); i++){
-			if (result <= probabilities.get(i)){
+			Main.sendDebugMessage("NEED TO GO UNDER: " + (probabilities.get(i) + base),mobHandlerDebug);
+			if (result <= probabilities.get(i) + base){
 				// Roll Success
+				Main.sendDebugMessage("SUCCESS",mobHandlerDebug);
 				return levels.get(i);
 			}
 			// Roll Failure
+			Main.sendDebugMessage("FAILURE",mobHandlerDebug);
 			base += probabilities.get(i);
 		}
 		// All rolls failed, just return last one.
