@@ -70,16 +70,17 @@ public class MobLevelHandler {
 			List<MetadataValue> metadataValueList = livingEntity.getMetadata("Level");
 			MetadataValue value = metadataValueList.get(metadataValueList.size() - 1);
 			if (value.asInt() >= 3 && value.asInt() <= 5){
-				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 1.5));
+				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 1.85));
 			} else if (value.asInt() > 5 && value.asInt() <= 9){
-				event.setDroppedExp(event.getDroppedExp() * 2);
+				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 2.25));
 			} else if (value.asInt() > 9){
-				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 2.5));
+				event.setDroppedExp(event.getDroppedExp() * 3);
 			}
 		}
 	}
 
 	private static boolean isValid(Map<Integer,Double> probMap){
+		// Returns if a map of probabilities is valid (probabilities sum to 1.0)
 		Double sum = 0.0;
 		for (Map.Entry<Integer,Double> entry : probMap.entrySet()){
 			sum += entry.getValue();
@@ -89,6 +90,7 @@ public class MobLevelHandler {
 		String correct = "1.000";
 		return correct.equals(resultSum);
 	}
+
 	public static Integer rollProbability(Map<Integer,Double> probMap){
 		if (!(isValid(probMap))){
 			Main.logger.log(Level.SEVERE, "Probability map that was passed was not valid! Sum of probabilities was not 1.0; check your code!!");

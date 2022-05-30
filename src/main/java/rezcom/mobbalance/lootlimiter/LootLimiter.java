@@ -106,6 +106,9 @@ public class LootLimiter implements Listener {
 
 	@EventHandler
 	void onBlockEXP(BlockExpEvent event){
+
+		// Coal ore, etc
+
 		int dropExp = event.getExpToDrop();
 
 		NamespacedKey worldKey = event.getBlock().getWorld().getKey();
@@ -118,10 +121,10 @@ public class LootLimiter implements Listener {
 		}
 		Integer numOfKills = curChunkMap.get(chunkKey);
 
-		if (numOfKills <= 10){
+		if (numOfKills <= 12){
 			// EXP Allowed
 			event.setExpToDrop(Math.min(dropExp,160));
-		} else if (numOfKills <= 20) {
+		} else if (numOfKills <= 25) {
 			event.setExpToDrop(Math.min(dropExp / 2, 80));
 			// Half EXP Allowed
 		} else {

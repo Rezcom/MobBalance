@@ -10,6 +10,8 @@ import rezcom.mobbalance.moblevels.CreeperHandler;
 import rezcom.mobbalance.moblevels.SkeletonHandler;
 import rezcom.mobbalance.moblevels.SpiderHandler;
 import rezcom.mobbalance.moblevels.ZombieHandler;
+import rezcom.mobbalance.wolves.WolfDebugCommand;
+import rezcom.mobbalance.wolves.WolfHandler;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +40,9 @@ public final class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new SpiderHandler(),this);
 		getServer().getPluginManager().registerEvents(new CreeperHandler(),this);
 
+		// Wolf Event
+		getServer().getPluginManager().registerEvents(new WolfHandler(), this);
+
 		getServer().getPluginManager().registerEvents(new XPGainHandler(),this);
 		// Register Commands
 		try {
@@ -45,6 +50,7 @@ public final class Main extends JavaPlugin {
 			this.getCommand("MBForcePurge").setExecutor(new ForcePurgeCommand());
 			this.getCommand("MBChunkInfo").setExecutor(new ChunkInfoCommand());
 			this.getCommand("MBXPView").setExecutor(new XPViewCommand());
+			this.getCommand("MBWolfDebug").setExecutor(new WolfDebugCommand());
 		} catch (NullPointerException e){
 			logger.log(Level.SEVERE,"Commands weren't initialized correctly! It returned a nullpointer exception.");
 		}
