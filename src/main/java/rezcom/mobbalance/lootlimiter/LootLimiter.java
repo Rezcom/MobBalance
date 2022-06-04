@@ -59,7 +59,6 @@ public class LootLimiter implements Listener {
 				event.getDrops().clear();
 			}
 
-
 		} else {
 			// IT WASN'T A PLAYER WHO KILLED IT!
 			// NO EXP OR DROPS

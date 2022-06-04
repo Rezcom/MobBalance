@@ -10,6 +10,7 @@ import rezcom.mobbalance.moblevels.CreeperHandler;
 import rezcom.mobbalance.moblevels.SkeletonHandler;
 import rezcom.mobbalance.moblevels.SpiderHandler;
 import rezcom.mobbalance.moblevels.ZombieHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
 import rezcom.mobbalance.wolves.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfHandler;
 
@@ -42,6 +43,7 @@ public final class Main extends JavaPlugin {
 
 		// Wolf Event
 		getServer().getPluginManager().registerEvents(new WolfHandler(), this);
+		getServer().getPluginManager().registerEvents(new WolfColorHandler(),this);
 
 		getServer().getPluginManager().registerEvents(new XPGainHandler(),this);
 		// Register Commands
