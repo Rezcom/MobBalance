@@ -23,3 +23,7 @@ commands:
     description: Toggles Wolf debug messages for players with bones in their mouths.
     usage: /MBWolfDebug
     permission: MobBalance.WolfDebug
+  MBWolfEXP:
+    description: Applies a set EXP value to the closest tamed wolf to the player.
+    usage: /MBWolfEXP
+    permission: MobBalance.WolfEXP

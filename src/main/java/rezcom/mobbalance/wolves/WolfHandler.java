@@ -98,7 +98,7 @@ public class WolfHandler implements Listener {
 
         player.sendMessage( wolf.getName()+ " is a Level " + level + " " + wolf.getCollarColor() + " wolf, with " + exp + " total EXP.");
         if (level < 12 && exp >= wolfLevels.get(level + 1)){
-            player.sendMessage( wolf.getName() + " is eager to Level up! Give them a " + WolfColorHandler.getFavoriteItem(wolf.getCollarColor()) + " soon!");
+            player.sendMessage( wolf.getName() + " is eager to Level up! Give them a " + WolfColorHandler.favoriteItems.get(wolf.getCollarColor()) + " soon!");
         }
     }
 

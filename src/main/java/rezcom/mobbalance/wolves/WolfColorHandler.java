@@ -2,13 +2,16 @@ package rezcom.mobbalance.wolves;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Breedable;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.material.Dye;
 import org.bukkit.metadata.FixedMetadataValue;
 import rezcom.mobbalance.Main;
 
@@ -33,6 +36,26 @@ public class WolfColorHandler implements Listener {
         put(DyeColor.PURPLE,0.01);
         put(DyeColor.ORANGE,0.01);
     }};
+
+    public static final Map<DyeColor, Material> favoriteItems = new HashMap<DyeColor, Material>(){{
+        put(DyeColor.RED,Material.PORKCHOP);
+        put(DyeColor.BLUE,Material.BEEF);
+        put(DyeColor.GREEN,Material.CHICKEN);
+        put(DyeColor.BROWN,Material.MUTTON);
+        put(DyeColor.YELLOW,Material.PHANTOM_MEMBRANE);
+        put(DyeColor.BLACK,Material.ROTTEN_FLESH);
+        put(DyeColor.WHITE,Material.APPLE);
+        put(DyeColor.LIGHT_BLUE,Material.SWEET_BERRIES);
+        put(DyeColor.GRAY,Material.SALMON);
+        put(DyeColor.PURPLE,Material.CARROT);
+        put(DyeColor.ORANGE,Material.MELON);
+        put(DyeColor.PINK,Material.AMETHYST_SHARD);
+        put(DyeColor.CYAN,Material.GOLDEN_CARROT);
+        put(DyeColor.LIGHT_GRAY,Material.RABBIT);
+        put(DyeColor.LIME,Material.CHORUS_FRUIT);
+        put(DyeColor.MAGENTA,Material.GLISTERING_MELON_SLICE);
+    }};
+
 
 
 
@@ -112,46 +135,91 @@ public class WolfColorHandler implements Listener {
             Wolf wolf = (Wolf) event.getRightClicked();
             WolfHandler.wolfDebugMessage(wolf, "Attempt to change the color of " + wolf.getName() + " was cancelled.");
         }
-
-
     }
 
-    static Material getFavoriteItem(DyeColor dyeColor){
-        switch (dyeColor){
-            case RED:
-                return Material.PORKCHOP;
-            case BLUE:
-                return Material.BEEF;
-            case GREEN:
-                return Material.CHICKEN;
-            case BROWN:
-                return Material.MUTTON;
-            case YELLOW:
-                return Material.PHANTOM_MEMBRANE;
-            case BLACK:
-                return Material.ROTTEN_FLESH;
-            case WHITE:
-                return Material.APPLE;
-            case LIGHT_BLUE:
-                return Material.SWEET_BERRIES;
-            case GRAY:
-                return Material.SALMON;
-            case PURPLE:
-                return Material.CARROT;
-            case ORANGE:
-                return Material.MELON;
-            case PINK:
-                return Material.AMETHYST_SHARD;
-            case CYAN:
-                return Material.GOLDEN_CARROT;
-            case LIGHT_GRAY:
-                return Material.RABBIT;
-            case LIME:
-                return Material.CHORUS_FRUIT;
-            case MAGENTA:
-                return Material.GLISTERING_MELON_SLICE;
+    boolean hasParentsOfTheseColors(DyeColor first, DyeColor second, DyeColor color1, DyeColor color2){
+        return (first == color1 && second == color2) || (first == color2 && second == color1);
+    }
+
+    // Returns the hybrid color between 2 colors if it exists. Returns null if it doesn't.
+    DyeColor getHybridColor(DyeColor first, DyeColor second){
+        if (hasParentsOfTheseColors(first, second, DyeColor.BLUE, DyeColor.WHITE)){
+            return DyeColor.LIGHT_BLUE;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.BLACK, DyeColor.WHITE)){
+            return DyeColor.GRAY;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.BLUE, DyeColor.RED)){
+            return DyeColor.PURPLE;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.RED, DyeColor.YELLOW)){
+            return DyeColor.ORANGE;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.RED, DyeColor.WHITE)){
+            return DyeColor.PINK;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.GREEN, DyeColor.BLUE)){
+            return DyeColor.CYAN;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.WHITE, DyeColor.GRAY)){
+            return DyeColor.LIGHT_GRAY;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.PURPLE, DyeColor.PINK)){
+            return DyeColor.MAGENTA;
+        } else if (hasParentsOfTheseColors(first, second, DyeColor.GREEN, DyeColor.WHITE)){
+            return DyeColor.LIME;
+        } else {
+            return null;
         }
-        Main.logger.log(Level.WARNING, "Attempted to get the favorite item for a DyeColor that wasn't accounted for! Check your code!!");
-        return Material.DIRT;
     }
+
+    @EventHandler
+    void onWolfBreed(EntityBreedEvent event){
+
+        // When wolves breed, if there exists no hybrid between the parents' colors, then it's a 50/50
+        // Otherwise, it's a 33/33/33 between the hybrid, and each of the parents' colors.
+
+        if (!(event.getEntity() instanceof Wolf)){
+            return;
+        }
+        Random random = new Random();
+
+        Wolf father = (Wolf) event.getFather();
+        Wolf mother = (Wolf) event.getMother();
+
+        if (!father.hasMetadata("Level") || !mother.hasMetadata("Level")){
+            // These wolves don't have levels somehow.
+            event.setCancelled(true);
+            return;
+        }
+
+        int fatherLevel = father.getMetadata("Level").get(0).asInt();
+        int motherLevel = mother.getMetadata("Level").get(0).asInt();
+        if (fatherLevel < 5 || motherLevel < 5){
+            event.setCancelled(true);
+            return;
+        }
+
+        Wolf child = (Wolf) event.getEntity();
+
+        DyeColor hybrid = getHybridColor(father.getCollarColor(),mother.getCollarColor());
+        double result = random.nextDouble();
+        WolfHandler.wolfDebugMessage(child, "RESULT: " + result);
+        if (hybrid == null){
+            WolfHandler.wolfDebugMessage(child, "There is no hybrid available for those 2 colors.");
+            // There's no hybrid. It's a 50/50.
+            if (result <= 0.5){
+                child.setCollarColor(father.getCollarColor());
+            } else {
+                child.setCollarColor(mother.getCollarColor());
+            }
+        } else {
+            // There is a hybrid. It's a 33%
+            WolfHandler.wolfDebugMessage(child, "There is a hybrid available.");
+            if (result <= 0.33){
+                child.setCollarColor(hybrid);
+            } else if (result <= 0.66){
+                child.setCollarColor(father.getCollarColor());
+            } else {
+                child.setCollarColor(mother.getCollarColor());
+            }
+        }
+
+    }
+
+
+
 }

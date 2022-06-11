@@ -52,10 +52,10 @@ public class LootLimiter implements Listener {
 			}
 
 			if (numOfKills > 5 && numOfKills <= 7){
-				// If 7 or more kills, reduced drops
+				// If 5 or more kills, reduced drops
 				reduceItemStackList(event.getDrops(),0.4);
 			} else if (numOfKills > 7){
-				// If 8 or more kills, no drops.
+				// If 7 or more kills, no drops.
 				event.getDrops().clear();
 			}
 

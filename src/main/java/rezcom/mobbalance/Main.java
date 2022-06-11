@@ -12,6 +12,7 @@ import rezcom.mobbalance.moblevels.SpiderHandler;
 import rezcom.mobbalance.moblevels.ZombieHandler;
 import rezcom.mobbalance.wolves.WolfColorHandler;
 import rezcom.mobbalance.wolves.WolfDebugCommand;
+import rezcom.mobbalance.wolves.WolfEXPCommand;
 import rezcom.mobbalance.wolves.WolfHandler;
 
 import java.util.logging.Level;
@@ -53,19 +54,17 @@ public final class Main extends JavaPlugin {
 			this.getCommand("MBChunkInfo").setExecutor(new ChunkInfoCommand());
 			this.getCommand("MBXPView").setExecutor(new XPViewCommand());
 			this.getCommand("MBWolfDebug").setExecutor(new WolfDebugCommand());
+			this.getCommand("MBWolfEXP").setExecutor(new WolfEXPCommand());
 		} catch (NullPointerException e){
 			logger.log(Level.SEVERE,"Commands weren't initialized correctly! It returned a nullpointer exception.");
 		}
 
 		logger.log(Level.INFO,"Plugin Initialized");
 
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
-			@Override
-			public void run(){
-				//logger.log(Level.INFO, "Purging Unloaded Chunks, Refreshing Chunks");
-				ChunkHandler.purgeChunks(getServer());
-				ChunkHandler.refreshAllChunks();
-			}
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+			//logger.log(Level.INFO, "Purging Unloaded Chunks, Refreshing Chunks");
+			ChunkHandler.purgeChunks(getServer());
+			ChunkHandler.refreshAllChunks();
 		},0,20 * 60 * 30); // 20 Ticks per second, 60 seconds per minute
 	}
 
