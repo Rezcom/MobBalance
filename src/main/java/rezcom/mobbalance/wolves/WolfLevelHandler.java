@@ -1,27 +1,20 @@
 package rezcom.mobbalance.wolves;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import java.util.logging.Level;
 
-public class WolfHandler implements Listener {
+public class WolfLevelHandler implements Listener {
 
     public static final Map<Integer,Integer> wolfLevels = new HashMap<Integer,Integer>(){{
         put(0,0);
@@ -52,7 +45,7 @@ public class WolfHandler implements Listener {
     @EventHandler
     void onPlayerHurtWolf(EntityDamageByEntityEvent event){
 
-        // If a player attacks a wolf, the damage is negated and the player receives damage instead.
+        // If a player attacks a wolf they do not own, the damage is negated and the player receives damage instead.
 
         if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Wolf) || !(((Wolf) event.getEntity()).isTamed())){
             return;
@@ -60,7 +53,7 @@ public class WolfHandler implements Listener {
 
         Wolf wolf = (Wolf) event.getEntity();
         Player player = (Player) event.getDamager();
-        if (wolf.isTamed()){
+        if (wolf.isTamed() && (wolf.getOwnerUniqueId() != player.getUniqueId())){
             event.setCancelled(true);
             player.damage(0.5);
             wolfDebugMessage(wolf, wolf.getName() + " was attacked by " + player.getName() + ", but the damage was negated.");

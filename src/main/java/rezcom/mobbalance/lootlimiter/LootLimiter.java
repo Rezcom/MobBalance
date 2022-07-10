@@ -1,6 +1,5 @@
 package rezcom.mobbalance.lootlimiter;
 
-import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
@@ -10,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExpEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import rezcom.mobbalance.Main;
 import rezcom.mobbalance.moblevels.MobLevelHandler;
@@ -86,13 +86,12 @@ public class LootLimiter implements Listener {
 
 
 			if (livingEntity.getKiller() != null){
-				// Killer was a player and there's less than 7 kills in this chunk
-				ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,mobSpecificCounter(livingEntity), maximumCounter,true);
+				// Killer was a player
 				Integer numOfKills = curChunkMap.get(chunkKey);
+				ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,mobSpecificCounter(livingEntity), maximumCounter, numOfKills <= 5);
 				if (numOfKills <= 7){
 					return;
 				}
-
 			}
 			// Killer wasn't a player, or too many kills, give less rewards.
 			// Less EXP
@@ -132,6 +131,36 @@ public class LootLimiter implements Listener {
 		}
 	}
 
+	@EventHandler
+	void onFishingEvent(PlayerFishEvent event){
+
+		// Whenever a player goes fishing.
+
+		if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH){
+			// If the player hasn't caught anything, return.
+			return;
+		}
+
+		NamespacedKey worldKey = event.getHook().getWorld().getKey();
+		Map<Long,Integer> curChunkMap = ChunkHandler.chunkCounters.get(worldKey);
+		long chunkKey = event.getHook().getChunk().getChunkKey();
+
+		// Player caught something.
+		int numOfKills = curChunkMap.get(chunkKey);
+		int dropExp = event.getExpToDrop();
+
+		ChunkHandler.updateChunkValue(curChunkMap,worldKey,chunkKey,1,maximumCounter,false);
+
+		if (numOfKills > 10 && numOfKills <= 20){
+			// Half EXP if there's more than 10 in this chunk.
+			event.setExpToDrop(dropExp / 2);
+		} else if (numOfKills > 20){
+			// Get nothing if it's over 20
+			event.setCancelled(true);
+		}
+
+	}
+
 	private static int mobSpecificCounter(LivingEntity livingEntity){
 		if (livingEntity.getType() == EntityType.IRON_GOLEM){
 			return 3;
@@ -151,4 +180,5 @@ public class LootLimiter implements Listener {
 		itemStacks.clear();
 		itemStacks.addAll(lessenedDrops);
 	}
+
 }

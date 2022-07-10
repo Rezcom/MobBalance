@@ -2,7 +2,6 @@ package rezcom.mobbalance.wolves;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Breedable;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
@@ -11,7 +10,6 @@ import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.material.Dye;
 import org.bukkit.metadata.FixedMetadataValue;
 import rezcom.mobbalance.Main;
 
@@ -133,7 +131,7 @@ public class WolfColorHandler implements Listener {
         if (dyeMaterials.contains(itemInHand)){
             event.setCancelled(true);
             Wolf wolf = (Wolf) event.getRightClicked();
-            WolfHandler.wolfDebugMessage(wolf, "Attempt to change the color of " + wolf.getName() + " was cancelled.");
+            WolfLevelHandler.wolfDebugMessage(wolf, "Attempt to change the color of " + wolf.getName() + " was cancelled.");
         }
     }
 
@@ -197,18 +195,18 @@ public class WolfColorHandler implements Listener {
 
         DyeColor hybrid = getHybridColor(father.getCollarColor(),mother.getCollarColor());
         double result = random.nextDouble();
-        WolfHandler.wolfDebugMessage(child, "RESULT: " + result);
+        WolfLevelHandler.wolfDebugMessage(child, "RESULT: " + result);
         if (hybrid == null){
-            WolfHandler.wolfDebugMessage(child, "There is no hybrid available for those 2 colors.");
             // There's no hybrid. It's a 50/50.
+            WolfLevelHandler.wolfDebugMessage(child, "There is no hybrid available for those 2 colors.");
             if (result <= 0.5){
                 child.setCollarColor(father.getCollarColor());
             } else {
                 child.setCollarColor(mother.getCollarColor());
             }
         } else {
-            // There is a hybrid. It's a 33%
-            WolfHandler.wolfDebugMessage(child, "There is a hybrid available.");
+            // There is a hybrid. It's a 33/33/33
+            WolfLevelHandler.wolfDebugMessage(child, "There is a hybrid available.");
             if (result <= 0.33){
                 child.setCollarColor(hybrid);
             } else if (result <= 0.66){

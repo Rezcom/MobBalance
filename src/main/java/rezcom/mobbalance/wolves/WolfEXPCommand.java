@@ -48,7 +48,7 @@ public class WolfEXPCommand implements CommandExecutor {
                 return false;
             }
             closestWolf.setMetadata("EXP", new FixedMetadataValue(Main.thisPlugin, exp));
-            closestWolf.setMetadata("Level", new FixedMetadataValue(Main.thisPlugin, WolfHandler.convertEXPtoLevel(exp)));
+            closestWolf.setMetadata("Level", new FixedMetadataValue(Main.thisPlugin, WolfLevelHandler.convertEXPtoLevel(exp)));
             sender.sendMessage("EXP change applied to " + closestWolf.getName());
             return true;
         } catch (NumberFormatException e){
