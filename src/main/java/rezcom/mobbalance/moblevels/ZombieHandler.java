@@ -2,7 +2,6 @@ package rezcom.mobbalance.moblevels;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -26,13 +25,16 @@ public class ZombieHandler implements Listener {
 	public static boolean zombieDebug = false;
 	public static boolean zombieFirstDebug = false;
 
-	public static PotionEffect speedEffect = new PotionEffect(PotionEffectType.SPEED,Integer.MAX_VALUE,1);
-	public static PotionEffect speedStrong = new PotionEffect(PotionEffectType.SPEED,Integer.MAX_VALUE,2);
-	public static PotionEffect fireResist = new PotionEffect(PotionEffectType.FIRE_RESISTANCE,Integer.MAX_VALUE,1);
-	public static PotionEffect resistanceEffect = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,Integer.MAX_VALUE,1);
-	public static PotionEffect strengthBuff = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE,1);
-	public static PotionEffect strengthStrong = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE,3);
+	public static final PotionEffect speedEffect = new PotionEffect(PotionEffectType.SPEED,Integer.MAX_VALUE,1);
+	public static final PotionEffect speedStrong = new PotionEffect(PotionEffectType.SPEED,Integer.MAX_VALUE,2);
+	public static final PotionEffect fireResist = new PotionEffect(PotionEffectType.FIRE_RESISTANCE,Integer.MAX_VALUE,1);
+	public static final PotionEffect resistanceEffect = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,Integer.MAX_VALUE,1);
+	public static final PotionEffect strengthBuff = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE,1);
+	public static final PotionEffect strengthStrong = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE,3);
 
+	public static final PotionEffect weakHunger = new PotionEffect(PotionEffectType.HUNGER,200,30);
+	public static final PotionEffect normalHunger = new PotionEffect(PotionEffectType.HUNGER,200,60);
+	public static final PotionEffect strongHunger = new PotionEffect(PotionEffectType.HUNGER,200,255);
 	@EventHandler
 	void onZombieSpawn(CreatureSpawnEvent event){
 		if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM || !(MobLevelHandler.spawnReasons.contains(event.getSpawnReason()))){
@@ -66,64 +68,22 @@ public class ZombieHandler implements Listener {
 		Main.sendDebugMessage("Spawning a Level " + level + " zombie.",zombieDebug);
 
 
-		if (level == 1){
-			setLevel1Armor(entityEquipment, random);
-		} else if (level == 2){
-			setLevel2Armor(entityEquipment, random);
-		} else if (level == 3){
-			setLevel3Armor(entityEquipment, random);
-			setLevel3Weapon(entityEquipment, random);
-		} else if (level == 4){
-			setLevel4Armor(entityEquipment, random);
-			setLevel3Weapon(entityEquipment, random);
-		} else if (level == 5){
-			setLevel4Armor(entityEquipment, random);
-			setLevel5Weapon(entityEquipment, random);
-		} else if (level == 6){
-			// BLOOD MOON TIME!!
-			setLevel6Armor(entityEquipment, random);
-			setLevel5Weapon(entityEquipment, random);
-			zombie.addPotionEffect(speedEffect);
-		} else if (level == 7){
-			setLevel7Armor(entityEquipment, random);
-			setLevel7Weapons(entityEquipment, random);
-			zombie.addPotionEffect(speedEffect);
-		} else if (level == 8){
-			setLevel7Armor(entityEquipment, random);
-			setLevel8Weapons(entityEquipment, random);
-			zombie.addPotionEffect(speedEffect);
-		} else if (level == 9){
-			setLevel9Armor(entityEquipment, random);
-			setLevel8Weapons(entityEquipment, random);
-			zombie.addPotionEffect(speedStrong);
-		} else if (level == 10){
-			setLevel10Armor(entityEquipment, random);
-			setLevel10Weapons(entityEquipment, random);
-			zombie.addPotionEffect(fireResist);
-			zombie.addPotionEffect(resistanceEffect);
-			zombie.addPotionEffect(speedStrong);
-		} else if (level == 11){
-			setLevel11Armor(entityEquipment, random);
-			setLevel10Weapons(entityEquipment, random);
-			zombie.addPotionEffect(fireResist);
-			zombie.addPotionEffect(resistanceEffect);
-			zombie.addPotionEffect(strengthBuff);
-			zombie.addPotionEffect(speedStrong);
-		} else if (level == 12) {
-			setLevel11Armor(entityEquipment, random);
-			setLevel10Weapons(entityEquipment, random);
-			zombie.addPotionEffect(fireResist);
-			zombie.addPotionEffect(resistanceEffect);
-			zombie.addPotionEffect(strengthStrong);
-			zombie.addPotionEffect(speedStrong);
+		applyEffects(zombie, level);
+
+		if (random.nextDouble() <= 0.15){
+			equipWeapons(entityEquipment, level, random);
 		}
 
+		if (random.nextDouble() <= 0.20){
+			equipArmor(entityEquipment,level,random);
+		}
 	}
-
 	@EventHandler
-	void applyHungerHit(EntityDamageByEntityEvent event){
+	void onZombieHit(EntityDamageByEntityEvent event){
+		// Whenever a player gets hit by a zombie, they should have a chance to receive hunger.
+
 		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Zombie)){
-			// Player wasn't was who was hit, or damager isn't a zombie.
+			// Player wasn't was who was hit, or attacker isn't a zombie.
 			return;
 		}
 		Player player = (Player) event.getEntity();
@@ -135,21 +95,110 @@ public class ZombieHandler implements Listener {
 		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
 
 		Random random = new Random();
-		PotionEffect weakHunger = new PotionEffect(PotionEffectType.HUNGER,200,0);
-		PotionEffect normalHunger = new PotionEffect(PotionEffectType.HUNGER,200,1);
-		PotionEffect strongHunger = new PotionEffect(PotionEffectType.HUNGER,200,2);
+		double eventDamage = event.getDamage();
+
+		// Apply hunger effects and damage multiplayer
 		if (level >= 4 && level <= 6){
+			event.setDamage(eventDamage * 1.25);
 			if (random.nextDouble() <= 0.33){
 				player.addPotionEffect(weakHunger);
 			}
 		} else if (level <= 9){
+			event.setDamage(eventDamage * 1.5);
 			if (random.nextDouble() <= 0.66){
 				player.addPotionEffect(normalHunger);
 			}
 		} else if (level <= 12){
+			event.setDamage(eventDamage * 1.75);
 			player.addPotionEffect(strongHunger);
 		}
 
+	}
+
+	@EventHandler
+	void onPlayerDamageZombie(EntityDamageByEntityEvent event){
+		// Whenever a player attacks a zombie, the zombie takes reduced damage dependent on level.
+
+		if (!(event.getEntity() instanceof Zombie) || !(event.getDamager() instanceof Player)){
+			return;
+		}
+
+		Zombie zombie = (Zombie) event.getEntity();
+
+		if (!(zombie.hasMetadata("Level"))){return;}
+
+		List<MetadataValue> metadataValueList = zombie.getMetadata("Level");
+		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+
+		double eventDamage = event.getDamage();
+
+		if (level >= 4 && level <= 6){
+			event.setDamage(eventDamage * 0.80);
+		} else if (level <= 9){
+			event.setDamage(eventDamage * 0.60);
+		} else if (level <= 12){
+			event.setDamage(eventDamage * 0.30);
+		}
+	}
+
+	private static void applyEffects(Zombie zombie, int level){
+		if (level >= 6 && level <= 8){
+			// BLOOD MOON TIME!!
+			zombie.addPotionEffect(speedEffect);
+		} else if (level == 9){
+			zombie.addPotionEffect(speedStrong);
+		} else if (level == 10){
+			zombie.addPotionEffect(fireResist);
+			zombie.addPotionEffect(resistanceEffect);
+			zombie.addPotionEffect(speedStrong);
+		} else if (level == 11){
+			zombie.addPotionEffect(fireResist);
+			zombie.addPotionEffect(resistanceEffect);
+			zombie.addPotionEffect(strengthBuff);
+			zombie.addPotionEffect(speedStrong);
+		} else if (level == 12) {
+			zombie.addPotionEffect(fireResist);
+			zombie.addPotionEffect(resistanceEffect);
+			zombie.addPotionEffect(strengthStrong);
+			zombie.addPotionEffect(speedStrong);
+		}
+	}
+
+	private static void equipWeapons(EntityEquipment entityEquipment, int level, Random random){
+		if (level == 3 || level == 4){
+			setLevel3Weapon(entityEquipment, random);
+		} else if (level == 5 || level == 6){
+			setLevel5Weapon(entityEquipment, random);
+		} else if (level == 7){
+			setLevel7Weapons(entityEquipment, random);
+		} else if (level == 8 || level == 9){
+			setLevel8Weapons(entityEquipment, random);
+		} else if (level >= 10){
+			setLevel10Weapons(entityEquipment, random);
+		}
+	}
+
+	private static void equipArmor(EntityEquipment entityEquipment, int level, Random random){
+		if (level == 1){
+			setLevel1Armor(entityEquipment, random);
+		} else if (level == 2){
+			setLevel2Armor(entityEquipment, random);
+		} else if (level == 3){
+			setLevel3Armor(entityEquipment, random);
+		} else if (level == 4 || level == 5){
+			setLevel4Armor(entityEquipment, random);
+		} else if (level == 6){
+			// BLOOD MOON TIME!!
+			setLevel6Armor(entityEquipment, random);
+		} else if (level == 7 || level == 8){
+			setLevel7Armor(entityEquipment, random);
+		} else if (level == 9){
+			setLevel9Armor(entityEquipment, random);
+		} else if (level == 10){
+			setLevel10Armor(entityEquipment, random);
+		} else if (level == 11 || level == 12){
+			setLevel11Armor(entityEquipment, random);
+		}
 	}
 
 	public static void setLevel1Armor(EntityEquipment entityEquipment, Random random){

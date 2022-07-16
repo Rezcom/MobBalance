@@ -15,10 +15,6 @@ commands:
     description: Provides the counter on the current chunk.
     usage: /MBChunkInfo
     permission: MobBalance.ChunkInfo
-  MBXPView:
-    description: Toggles when a player can view EXP they gain.
-    usage: /MBXPView
-    permission: MobBalance.XPView
   MBWolfDebug:
     description: Toggles Wolf debug messages for players with bones in their mouths.
     usage: /MBWolfDebug
