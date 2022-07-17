@@ -62,7 +62,7 @@ public class ZombieHandler implements Listener {
 			return;
 		}
 
-		zombie.setMetadata("Level", new FixedMetadataValue(Main.thisPlugin,level));
+		zombie.setMetadata("RezLevel", new FixedMetadataValue(Main.thisPlugin,level));
 		EntityEquipment entityEquipment = zombie.getEquipment();
 		Random random = new Random();
 		Main.sendDebugMessage("Spawning a Level " + level + " zombie.",zombieDebug);
@@ -70,11 +70,11 @@ public class ZombieHandler implements Listener {
 
 		applyEffects(zombie, level);
 
-		if (random.nextDouble() <= 0.15){
+		if (random.nextDouble() <= 0.20){
 			equipWeapons(entityEquipment, level, random);
 		}
 
-		if (random.nextDouble() <= 0.20){
+		if (random.nextDouble() <= 0.25){
 			equipArmor(entityEquipment,level,random);
 		}
 	}
@@ -89,27 +89,33 @@ public class ZombieHandler implements Listener {
 		Player player = (Player) event.getEntity();
 		Zombie zombie = (Zombie) event.getDamager();
 
-		if (!(zombie.hasMetadata("Level"))){return;}
+		if (!(zombie.hasMetadata("RezLevel"))){return;}
 
-		List<MetadataValue> metadataValueList = zombie.getMetadata("Level");
+		List<MetadataValue> metadataValueList = zombie.getMetadata("RezLevel");
 		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
 
 		Random random = new Random();
 		double eventDamage = event.getDamage();
 
+		boolean weaponEquipped = false;
+		if (zombie.getEquipment().getItemInMainHand().getType() != Material.AIR || zombie.getEquipment().getItemInOffHand().getType() != Material.AIR){
+			weaponEquipped = true;
+		}
+
+
 		// Apply hunger effects and damage multiplayer
 		if (level >= 4 && level <= 6){
-			event.setDamage(eventDamage * 1.25);
+			event.setDamage(eventDamage * (weaponEquipped ? 1.5 : 1.75));
 			if (random.nextDouble() <= 0.33){
 				player.addPotionEffect(weakHunger);
 			}
 		} else if (level <= 9){
-			event.setDamage(eventDamage * 1.5);
+			event.setDamage(eventDamage * (weaponEquipped ? 1.75 : 2.0));
 			if (random.nextDouble() <= 0.66){
 				player.addPotionEffect(normalHunger);
 			}
 		} else if (level <= 12){
-			event.setDamage(eventDamage * 1.75);
+			event.setDamage(eventDamage * (weaponEquipped ? 2.0 : 2.25));
 			player.addPotionEffect(strongHunger);
 		}
 
@@ -125,19 +131,23 @@ public class ZombieHandler implements Listener {
 
 		Zombie zombie = (Zombie) event.getEntity();
 
-		if (!(zombie.hasMetadata("Level"))){return;}
+		if (!(zombie.hasMetadata("RezLevel"))){return;}
 
-		List<MetadataValue> metadataValueList = zombie.getMetadata("Level");
+		List<MetadataValue> metadataValueList = zombie.getMetadata("RezLevel");
 		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
 
 		double eventDamage = event.getDamage();
 
-		if (level >= 4 && level <= 6){
-			event.setDamage(eventDamage * 0.80);
-		} else if (level <= 9){
-			event.setDamage(eventDamage * 0.60);
+		if (level < 4){
+			event.setDamage(eventDamage * 0.70);
+		} else if (level <= 6){
+			event.setDamage(eventDamage * 0.55);
+		} else if (level <= 8){
+			event.setDamage(eventDamage * 0.40);
+		} else if (level <= 10){
+			event.setDamage(eventDamage * 0.25);
 		} else if (level <= 12){
-			event.setDamage(eventDamage * 0.30);
+			event.setDamage(eventDamage * 0.10);
 		}
 	}
 

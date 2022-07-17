@@ -8,6 +8,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import rezcom.mobbalance.Main;
 
@@ -47,8 +49,11 @@ public class WolfEXPCommand implements CommandExecutor {
                 sender.sendMessage("No tamed wolf was found nearby.");
                 return false;
             }
-            closestWolf.setMetadata("EXP", new FixedMetadataValue(Main.thisPlugin, exp));
-            closestWolf.setMetadata("Level", new FixedMetadataValue(Main.thisPlugin, WolfLevelHandler.convertEXPtoLevel(exp)));
+
+            PersistentDataContainer closestPDC = closestWolf.getPersistentDataContainer();
+            closestPDC.set(WolfGeneralHandler.WolfEXP, PersistentDataType.INTEGER,exp);
+            closestPDC.set(WolfGeneralHandler.WolfLevel,PersistentDataType.INTEGER,WolfGeneralHandler.convertEXPtoLevel(exp));
+
             sender.sendMessage("EXP change applied to " + closestWolf.getName());
             return true;
         } catch (NumberFormatException e){

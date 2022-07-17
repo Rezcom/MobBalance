@@ -10,7 +10,8 @@ import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import rezcom.mobbalance.Main;
 
 import java.util.*;
@@ -19,15 +20,15 @@ import java.util.logging.Level;
 public class WolfColorHandler implements Listener {
 
     public static final Map<DyeColor, Double> wildProbs = new HashMap<DyeColor, Double>(){{
-        // 84% of the time, it'll be one of these four.
-        put(DyeColor.RED,0.21);
-        put(DyeColor.BLUE,0.21);
-        put(DyeColor.GREEN,0.21);
-        put(DyeColor.BROWN,0.21);
-        // 12% of the time, it'll be one of these three.
-        put(DyeColor.YELLOW,0.04);
-        put(DyeColor.BLACK,0.04);
-        put(DyeColor.WHITE,0.04);
+        // 81% of the time, it'll be one of these four.
+        put(DyeColor.RED,0.2025);
+        put(DyeColor.BLUE,0.2025);
+        put(DyeColor.GREEN,0.2025);
+        put(DyeColor.BROWN,0.2025);
+        // 15% of the time, it'll be one of these three.
+        put(DyeColor.YELLOW,0.05);
+        put(DyeColor.BLACK,0.05);
+        put(DyeColor.WHITE,0.05);
         // 4% of the time, it'll be one of these four.
         put(DyeColor.LIGHT_BLUE,0.01);
         put(DyeColor.GRAY,0.01);
@@ -65,7 +66,11 @@ public class WolfColorHandler implements Listener {
 
         Wolf wolf = (Wolf) event.getEntity();
         wolf.setCollarColor(rollColor(wildProbs));
-        wolf.setMetadata("EXP", new FixedMetadataValue(Main.thisPlugin, 0));
+
+        PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
+
+        wolfPDC.set(WolfGeneralHandler.WolfLevel, PersistentDataType.INTEGER, 0);
+        wolfPDC.set(WolfGeneralHandler.WolfEXP, PersistentDataType.INTEGER, 0);
     }
 
     private static boolean isValid(Map<DyeColor,Double> probMap){
@@ -131,7 +136,7 @@ public class WolfColorHandler implements Listener {
         if (dyeMaterials.contains(itemInHand)){
             event.setCancelled(true);
             Wolf wolf = (Wolf) event.getRightClicked();
-            WolfLevelHandler.wolfDebugMessage(wolf, "Attempt to change the color of " + wolf.getName() + " was cancelled.");
+            WolfDebugCommand.wolfDebugMessage(wolf, "Attempt to change the color of " + wolf.getName() + " was cancelled.");
         }
     }
 
@@ -178,14 +183,9 @@ public class WolfColorHandler implements Listener {
         Wolf father = (Wolf) event.getFather();
         Wolf mother = (Wolf) event.getMother();
 
-        if (!father.hasMetadata("Level") || !mother.hasMetadata("Level")){
-            // These wolves don't have levels somehow.
-            event.setCancelled(true);
-            return;
-        }
 
-        int fatherLevel = father.getMetadata("Level").get(0).asInt();
-        int motherLevel = mother.getMetadata("Level").get(0).asInt();
+        int fatherLevel = WolfGeneralHandler.getWolfLevel(father);
+        int motherLevel = WolfGeneralHandler.getWolfLevel(mother);
         if (fatherLevel < 5 || motherLevel < 5){
             event.setCancelled(true);
             return;
@@ -195,10 +195,10 @@ public class WolfColorHandler implements Listener {
 
         DyeColor hybrid = getHybridColor(father.getCollarColor(),mother.getCollarColor());
         double result = random.nextDouble();
-        WolfLevelHandler.wolfDebugMessage(child, "RESULT: " + result);
+        WolfDebugCommand.wolfDebugMessage(child, "RESULT: " + result);
         if (hybrid == null){
             // There's no hybrid. It's a 50/50.
-            WolfLevelHandler.wolfDebugMessage(child, "There is no hybrid available for those 2 colors.");
+            WolfDebugCommand.wolfDebugMessage(child, "There is no hybrid available for those 2 colors.");
             if (result <= 0.5){
                 child.setCollarColor(father.getCollarColor());
             } else {
@@ -206,7 +206,7 @@ public class WolfColorHandler implements Listener {
             }
         } else {
             // There is a hybrid. It's a 33/33/33
-            WolfLevelHandler.wolfDebugMessage(child, "There is a hybrid available.");
+            WolfDebugCommand.wolfDebugMessage(child, "There is a hybrid available.");
             if (result <= 0.33){
                 child.setCollarColor(hybrid);
             } else if (result <= 0.66){
@@ -215,6 +215,10 @@ public class WolfColorHandler implements Listener {
                 child.setCollarColor(mother.getCollarColor());
             }
         }
+
+        PersistentDataContainer childPDC = child.getPersistentDataContainer();
+        childPDC.set(WolfGeneralHandler.WolfLevel,PersistentDataType.INTEGER,0);
+        childPDC.set(WolfGeneralHandler.WolfEXP,PersistentDataType.INTEGER,0);
 
     }
 

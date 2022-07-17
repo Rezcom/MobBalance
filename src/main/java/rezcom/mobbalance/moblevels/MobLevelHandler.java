@@ -66,8 +66,8 @@ public class MobLevelHandler {
 		// with 6 or less kills in the chunk counter.
 		// This method does NOT check that those conditions are fulfilled.
 		LivingEntity livingEntity = event.getEntity();
-		if (livingEntity.hasMetadata("Level")){
-			List<MetadataValue> metadataValueList = livingEntity.getMetadata("Level");
+		if (livingEntity.hasMetadata("RezLevel")){
+			List<MetadataValue> metadataValueList = livingEntity.getMetadata("RezLevel");
 			MetadataValue value = metadataValueList.get(metadataValueList.size() - 1);
 			if (value.asInt() >= 3 && value.asInt() <= 5){
 				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 1.85));

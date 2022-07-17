@@ -62,7 +62,7 @@ public class SkeletonHandler implements Listener {
 			return;
 		}
 
-		skeleton.setMetadata("Level",new FixedMetadataValue(Main.thisPlugin, level));
+		skeleton.setMetadata("RezLevel",new FixedMetadataValue(Main.thisPlugin, level));
 		EntityEquipment entityEquipment = skeleton.getEquipment();
 		Random random = new Random();
 		Main.sendDebugMessage("Spawning a Level " + level + " skeleton.",skeletonDebug);
@@ -107,19 +107,19 @@ public class SkeletonHandler implements Listener {
 		}
 
 		Skeleton skeleton = (Skeleton) event.getEntity();
-		if (!(skeleton.hasMetadata("Level"))){return;}
+		if (!(skeleton.hasMetadata("RezLevel"))){return;}
 
-		List<MetadataValue> metadataValueList = skeleton.getMetadata("Level");
+		List<MetadataValue> metadataValueList = skeleton.getMetadata("RezLevel");
 		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
 
 		double eventDamage = event.getDamage();
 
 		if (level >= 4 && level <= 6){
-			event.setDamage(eventDamage * 0.85);
-		} else if (level <= 9){
 			event.setDamage(eventDamage * 0.70);
+		} else if (level <= 9){
+			event.setDamage(eventDamage * 0.50);
 		} else if (level <= 12){
-			event.setDamage(eventDamage * 0.55);
+			event.setDamage(eventDamage * 0.25);
 		}
 	}
 

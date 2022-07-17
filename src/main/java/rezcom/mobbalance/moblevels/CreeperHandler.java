@@ -59,7 +59,7 @@ public class CreeperHandler implements Listener {
 			return;
 		}
 
-		creeper.setMetadata("Level", new FixedMetadataValue(Main.thisPlugin,level));
+		creeper.setMetadata("RezLevel", new FixedMetadataValue(Main.thisPlugin,level));
 
 		Main.sendDebugMessage("Spawning a level " + level + " creeper.",creeperDebug);
 
@@ -156,9 +156,9 @@ public class CreeperHandler implements Listener {
 		Main.sendDebugMessage("A creeper was shot",creeperDebug);
 
 		Creeper creeper = (Creeper) event.getEntity();
-		if (!(creeper.hasMetadata("Level"))){return;}
+		if (!(creeper.hasMetadata("RezLevel"))){return;}
 
-		List<MetadataValue> metadataValueList = creeper.getMetadata("Level");
+		List<MetadataValue> metadataValueList = creeper.getMetadata("RezLevel");
 		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
 
 		double curDamage = event.getDamage();
