@@ -15,8 +15,6 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -24,7 +22,6 @@ import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class SkeletonHandler implements Listener {

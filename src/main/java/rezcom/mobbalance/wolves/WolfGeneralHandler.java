@@ -1,5 +1,6 @@
 package rezcom.mobbalance.wolves;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
@@ -197,32 +198,24 @@ public class WolfGeneralHandler implements Listener {
         return false;
     }
 
-    /*
-    @EventHandler
-    void onHighLevelMobSpawn(CreatureSpawnEvent event){
 
-        // Light gray wolves can sense the spawn of high level creatures
+    // Checks if a player owns a wolf nearby and is the correct level, and returns the wolf.
+    // If not, returns null.
+    public static Wolf isNearbyOwnedWolf(Player player, int minLevel, DyeColor dyeColor, int radius){
+        if (player.getLevel() < minLevel){return null;}
 
-        LivingEntity livingEntity = event.getEntity();
-        for (Entity entity : livingEntity.getNearbyEntities(32,32,32)){
-            if (entity instanceof Wolf){
-                Wolf wolf = (Wolf) entity;
-                if (wolf.isTamed() && wolf.getCollarColor() == DyeColor.LIGHT_GRAY){
-                    boolean highLevel = false;
-                    for (MetadataValue metadataValue : livingEntity.getMetadata("Level")){
-                        if (metadataValue.asInt() >= 6){
-                            highLevel = true;
-                        }
-                    }
-                    if (livingEntity.getType() == EntityType.WITHER || livingEntity.getType() == EntityType.ENDER_DRAGON
-                            || highLevel){
-                        wolfDebugMessage(wolf, wolf.getName() + " has sensed a high level " + livingEntity.getName());
-                        livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING,2400,0));
-                    }
-
+        for (LivingEntity livingEntity : player.getLocation().getNearbyLivingEntities(32)){
+            if (livingEntity instanceof Wolf && ((Wolf) livingEntity).isTamed() && ((Wolf) livingEntity).getCollarColor() == dyeColor){
+                // We found a tamed wolf of the correct color.
+                Wolf wolf = (Wolf) livingEntity;
+                if (wolf.getOwnerUniqueId() != null && wolf.getOwnerUniqueId().equals(player.getUniqueId())){
+                    return wolf;
+                } else {
+                    return null;
                 }
             }
         }
-    }*/
+        return null;
+    }
 
 }

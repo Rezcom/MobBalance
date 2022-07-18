@@ -38,17 +38,17 @@ public class RedWolfHandler implements Listener {
     private static final Map<Integer,Double> damageResist = new HashMap<Integer,Double>(){{
         put(0, 0.60);
         put(1, 0.60);
-        put(2, 0.60);
-        put(3, 0.60);
-        put(4, 0.60);
-        put(5, 0.60);
-        put(6, 0.65);
-        put(7, 0.65);
-        put(8, 0.65);
-        put(9, 0.70);
-        put(10,0.70);
-        put(11,0.70);
-        put(12,0.70);
+        put(2, 0.65);
+        put(3, 0.65);
+        put(4, 0.65);
+        put(5, 0.70);
+        put(6, 0.70);
+        put(7, 0.75);
+        put(8, 0.75);
+        put(9, 0.75);
+        put(10,0.80);
+        put(11,0.80);
+        put(12,0.80);
     }};
 
     // Critical Damage - How much damage the wolf does upon getting a critical proc.
@@ -135,7 +135,7 @@ public class RedWolfHandler implements Listener {
     @EventHandler
     void onWolfGetsHit(EntityDamageByEntityEvent event){
 
-        if (!(event.getEntity() instanceof Wolf) || (event.getDamager() instanceof Player)){
+        if (!(event.getEntity() instanceof Wolf) || (event.getDamager() instanceof Player) || !(((Wolf) event.getEntity()).getCollarColor() == DyeColor.RED)){
             return;
         }
         Wolf wolf = (Wolf) event.getEntity();

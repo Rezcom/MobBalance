@@ -25,14 +25,14 @@ public class BlueWolfHandler implements Listener {
         put(2, 1.0);
         put(3, 1.0);
         put(4, 1.0);
-        put(5, 1.25);
-        put(6, 1.25);
+        put(5, 1.0);
+        put(6, 1.0);
         put(7, 1.25);
         put(8, 1.25);
         put(9, 1.25);
-        put(10,1.5);
-        put(11,1.5);
-        put(12,1.5);
+        put(10,1.25);
+        put(11,1.25);
+        put(12,1.25);
     }};
 
     // Damage Resist
@@ -180,9 +180,8 @@ public class BlueWolfHandler implements Listener {
             return;
         }
         Player player = (Player) event.getEntity();
-        Wolf wolf = isNearbyOwnedBlueWolf(player);
+        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,25,DyeColor.BLUE,32);
         if (wolf == null){
-            if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
         }
         int level = WolfGeneralHandler.getWolfLevel(wolf);
@@ -198,22 +197,4 @@ public class BlueWolfHandler implements Listener {
         }
     }
 
-    // Checks if a player owns a blue wolf nearby and is Level 25+.
-    // If not, returns null.
-    Wolf isNearbyOwnedBlueWolf(Player player){
-        if (player.getLevel() < 25){return null;}
-
-        for (LivingEntity livingEntity : player.getLocation().getNearbyLivingEntities(32)){
-            if (livingEntity instanceof Wolf && ((Wolf) livingEntity).isTamed() && ((Wolf) livingEntity).getCollarColor() == DyeColor.BLUE){
-                // We found a tamed blue collar wolf.
-                Wolf wolf = (Wolf) livingEntity;
-                if (wolf.getOwnerUniqueId() != null && wolf.getOwnerUniqueId().equals(player.getUniqueId())){
-                    return wolf;
-                } else {
-                    return null;
-                }
-            }
-        }
-        return null;
-    }
 }
