@@ -12,6 +12,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
@@ -53,15 +55,14 @@ public class CreeperHandler implements Listener {
 		} else {
 			level = MobLevelHandler.rollProbability(MobLevelHandler.defaultProbs);
 		}
-
 		if (level == null){
 			Main.logger.log(Level.WARNING,"Creeper level was null!");
 			return;
 		}
 
-		creeper.setMetadata("RezLevel", new FixedMetadataValue(Main.thisPlugin,level));
-
-		Main.sendDebugMessage("Spawning a level " + level + " creeper.",creeperDebug);
+		PersistentDataContainer creeperPDC = creeper.getPersistentDataContainer();
+		creeperPDC.set(MobLevelHandler.MobLevel, PersistentDataType.INTEGER, level);
+		MobLevelHandler.checkElite(creeper);
 
 		Random random = new Random();
 
@@ -156,10 +157,7 @@ public class CreeperHandler implements Listener {
 		Main.sendDebugMessage("A creeper was shot",creeperDebug);
 
 		Creeper creeper = (Creeper) event.getEntity();
-		if (!(creeper.hasMetadata("RezLevel"))){return;}
-
-		List<MetadataValue> metadataValueList = creeper.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(creeper);
 
 		double curDamage = event.getDamage();
 

@@ -79,7 +79,7 @@ public class WolfGeneralHandler implements Listener {
         int level = getWolfLevel(wolf);
         int exp = getWolfEXP(wolf);
 
-        player.sendMessage("GetOwnerUUID: " + wolf.getOwnerUniqueId() + "\nplayer.getUniqueID: " + player.getUniqueId());
+        //player.sendMessage("GetOwnerUUID: " + wolf.getOwnerUniqueId() + "\nplayer.getUniqueID: " + player.getUniqueId());
 
         player.sendMessage( wolf.getName()+ " is a Level " + level + " " + wolf.getCollarColor() + " wolf, with " + exp + " total EXP.");
         if (level < 12 && exp >= wolfLevels.get(level + 1)){
@@ -96,9 +96,10 @@ public class WolfGeneralHandler implements Listener {
             wolfPDC.set(WolfLevel, PersistentDataType.INTEGER,0);
             wolfPDC.set(WolfEXP, PersistentDataType.INTEGER, 0);
             return 0;
+        } else {
+            return wolfPDC.get(WolfLevel, PersistentDataType.INTEGER);
         }
 
-        return wolfPDC.get(WolfLevel, PersistentDataType.INTEGER);
     }
 
     public static int getWolfEXP(Wolf wolf){
@@ -144,8 +145,12 @@ public class WolfGeneralHandler implements Listener {
         }
     }
 
+    // Surrounding the current wolf, applies a potionEffect to allies in the raidus.
+    // includeWolves will include allied wolves.
+    // includePlayers will apply the effect to players as well, but not the owner.
+    // includeOwner includes the owner.
 
-    static void applyPackWithEffect(Wolf wolf, PotionEffect potionEffect, double radius, boolean includePlayers, boolean includeWolves, boolean includingOwner){
+    public static void applyPackWithEffect(Wolf wolf, PotionEffect potionEffect, double radius, boolean includePlayers, boolean includeWolves, boolean includingOwner){
         String wolfName = wolf.getName();
         for (Entity entity : wolf.getNearbyEntities(radius,radius,radius)){
             if (entity instanceof Player && includePlayers){

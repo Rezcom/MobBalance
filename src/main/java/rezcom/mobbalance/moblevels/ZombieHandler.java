@@ -2,7 +2,9 @@ package rezcom.mobbalance.moblevels;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +15,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
@@ -62,7 +66,12 @@ public class ZombieHandler implements Listener {
 			return;
 		}
 
-		zombie.setMetadata("RezLevel", new FixedMetadataValue(Main.thisPlugin,level));
+
+
+		PersistentDataContainer zombiePDC = zombie.getPersistentDataContainer();
+		zombiePDC.set(MobLevelHandler.MobLevel, PersistentDataType.INTEGER, level);
+		MobLevelHandler.checkElite(zombie);
+
 		EntityEquipment entityEquipment = zombie.getEquipment();
 		Random random = new Random();
 		Main.sendDebugMessage("Spawning a Level " + level + " zombie.",zombieDebug);
@@ -82,41 +91,35 @@ public class ZombieHandler implements Listener {
 	void onZombieHit(EntityDamageByEntityEvent event){
 		// Whenever a player gets hit by a zombie, they should have a chance to receive hunger.
 
-		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Zombie)){
+		if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Zombie)){
 			// Player wasn't was who was hit, or attacker isn't a zombie.
 			return;
 		}
-		Player player = (Player) event.getEntity();
+		LivingEntity livingEntity = (LivingEntity) event.getEntity();
 		Zombie zombie = (Zombie) event.getDamager();
 
-		if (!(zombie.hasMetadata("RezLevel"))){return;}
-
-		List<MetadataValue> metadataValueList = zombie.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(zombie);
 
 		Random random = new Random();
 		double eventDamage = event.getDamage();
 
-		boolean weaponEquipped = false;
-		if (zombie.getEquipment().getItemInMainHand().getType() != Material.AIR || zombie.getEquipment().getItemInOffHand().getType() != Material.AIR){
-			weaponEquipped = true;
-		}
+		boolean weaponEquipped = zombie.getEquipment().getItemInMainHand().getType() != Material.AIR || zombie.getEquipment().getItemInOffHand().getType() != Material.AIR;
 
 
 		// Apply hunger effects and damage multiplayer
 		if (level >= 4 && level <= 6){
 			event.setDamage(eventDamage * (weaponEquipped ? 1.5 : 1.75));
 			if (random.nextDouble() <= 0.33){
-				player.addPotionEffect(weakHunger);
+				livingEntity.addPotionEffect(weakHunger);
 			}
 		} else if (level <= 9){
 			event.setDamage(eventDamage * (weaponEquipped ? 1.75 : 2.0));
 			if (random.nextDouble() <= 0.66){
-				player.addPotionEffect(normalHunger);
+				livingEntity.addPotionEffect(normalHunger);
 			}
 		} else if (level <= 12){
 			event.setDamage(eventDamage * (weaponEquipped ? 2.0 : 2.25));
-			player.addPotionEffect(strongHunger);
+			livingEntity.addPotionEffect(strongHunger);
 		}
 
 	}
@@ -125,16 +128,13 @@ public class ZombieHandler implements Listener {
 	void onPlayerDamageZombie(EntityDamageByEntityEvent event){
 		// Whenever a player attacks a zombie, the zombie takes reduced damage dependent on level.
 
-		if (!(event.getEntity() instanceof Zombie) || !(event.getDamager() instanceof Player)){
+		if (!(event.getEntity() instanceof Zombie) || !(event.getDamager() instanceof Player || (event.getDamager() instanceof Wolf))){
 			return;
 		}
 
 		Zombie zombie = (Zombie) event.getEntity();
 
-		if (!(zombie.hasMetadata("RezLevel"))){return;}
-
-		List<MetadataValue> metadataValueList = zombie.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(zombie);
 
 		double eventDamage = event.getDamage();
 

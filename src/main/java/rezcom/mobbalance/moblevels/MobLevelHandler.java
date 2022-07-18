@@ -1,9 +1,16 @@
 package rezcom.mobbalance.moblevels;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 import rezcom.mobbalance.Main;
 
 import java.util.*;
@@ -14,6 +21,10 @@ public class MobLevelHandler {
 	public static boolean crimsonNight = false;
 	public static boolean mobHandlerDebug = false;
 
+	public static final NamespacedKey MobLevel = new NamespacedKey(Main.thisPlugin, "MobLevel");
+
+	public static final Component eliteCustomName = Component.text("Elite").color(TextColor.color(0xd11800)).decorate(TextDecoration.BOLD);
+	public static final Component crimsonCustomName = Component.text("Crimson").color(TextColor.color(0xb51500)).decorate(TextDecoration.BOLD);
 	// Spawn Reasons that would trigger levels
 	public static final ArrayList<CreatureSpawnEvent.SpawnReason> spawnReasons = new ArrayList<>(Arrays.asList(
 			CreatureSpawnEvent.SpawnReason.NATURAL,
@@ -79,7 +90,7 @@ public class MobLevelHandler {
 		}
 	}
 
-	private static boolean isValid(Map<Integer,Double> probMap){
+	private static boolean isValid(@NotNull Map<Integer,Double> probMap){
 		// Returns if a map of probabilities is valid (probabilities sum to 1.0)
 		Double sum = 0.0;
 		for (Map.Entry<Integer,Double> entry : probMap.entrySet()){
@@ -101,6 +112,7 @@ public class MobLevelHandler {
 		for (Map.Entry<Integer,Double> entry : probMap.entrySet()){
 			levels.add(entry.getKey());
 			probabilities.add(entry.getValue());
+			//Main.logger.log(Level.INFO,"Key: " + entry.getKey() + "\nValue: " + entry.getValue());
 		}
 		Double base = 0.0;
 		Random random = new Random();
@@ -120,5 +132,26 @@ public class MobLevelHandler {
 		// All rolls failed, just return last one.
 		// This should never happen...
 		return levels.get(levels.size() - 1);
+	}
+
+	public static int getMobLevel(LivingEntity livingEntity){
+		PersistentDataContainer livingEntityPDC = livingEntity.getPersistentDataContainer();
+		if (livingEntityPDC.get(MobLevel, PersistentDataType.INTEGER) == null){
+			livingEntityPDC.set(MobLevel, PersistentDataType.INTEGER, 0);
+			return 0;
+		}
+		return livingEntityPDC.get(MobLevel, PersistentDataType.INTEGER);
+	}
+
+	public static void checkElite(LivingEntity livingEntity){
+		int level = getMobLevel(livingEntity);
+		if (level > 7 && level < 12){
+			livingEntity.customName(eliteCustomName);
+			livingEntity.setCustomNameVisible(true);
+		} else if (level == 12){
+			Main.logger.log(Level.INFO,"CRIMSON ENEMY SPAWNED at " + livingEntity.getLocation());
+			livingEntity.customName(crimsonCustomName);
+			livingEntity.setCustomNameVisible(true);
+		}
 	}
 }

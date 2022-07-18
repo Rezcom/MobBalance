@@ -2,6 +2,7 @@ package rezcom.mobbalance.moblevels;
 
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Wolf;
@@ -12,6 +13,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
@@ -93,7 +96,10 @@ public class SpiderHandler implements Listener {
 			return;
 		}
 
-		spider.setMetadata("RezLevel",new FixedMetadataValue(Main.thisPlugin, level));
+		PersistentDataContainer spiderPDC = spider.getPersistentDataContainer();
+		spiderPDC.set(MobLevelHandler.MobLevel, PersistentDataType.INTEGER, level);
+		MobLevelHandler.checkElite(spider);
+
 		Main.sendDebugMessage("Spawning a level " + level + " spider",spiderDebug);
 
 		if (level == 1 || level == 2){
@@ -149,10 +155,8 @@ public class SpiderHandler implements Listener {
 		Main.sendDebugMessage("A spider was shot",spiderDebug);
 
 		Spider spider = (Spider) event.getEntity();
-		if (!(spider.hasMetadata("RezLevel"))){return;}
 
-		List<MetadataValue> metadataValueList = spider.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(spider);
 
 		double curDamage = event.getDamage();
 
@@ -175,10 +179,7 @@ public class SpiderHandler implements Listener {
 		}
 		Spider spider = (Spider) event.getEntity();
 
-		if (!(spider.hasMetadata("RezLevel"))){return;}
-
-		List<MetadataValue> metadataValueList = spider.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(spider);
 
 		double eventDamage = event.getDamage();
 
@@ -196,86 +197,83 @@ public class SpiderHandler implements Listener {
 
 	@EventHandler
 	void applySpiderHit(EntityDamageByEntityEvent event){
-		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Spider)){
-			// Player wasn't was who was hit, or damager isn't a spider.
+		if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Spider)){
+			// LivingEntity wasn't was who was hit, or damager isn't a spider.
 			return;
 		}
-		Player player = (Player) event.getEntity();
+		LivingEntity livingEntity = (LivingEntity) event.getEntity();
 		Spider spider = (Spider) event.getDamager();
 
-		if (!(spider.hasMetadata("RezLevel"))){return;}
-
-		List<MetadataValue> metadataValueList = spider.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(spider);
 
 		double eventDamage = event.getDamage();
 
 		Random random = new Random();
 		if (level == 1){
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakNausea);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakPoison);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakFatigue);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakSlow);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakNausea);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakPoison);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakFatigue);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakSlow);}
 			event.setDamage(eventDamage * 1.25);
 		} else if (level == 2){
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(weakNausea);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakPoison);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(weakFatigue);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakSlow);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(weakNausea);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakPoison);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(weakFatigue);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakSlow);}
 			event.setDamage(eventDamage * 1.25);
 		} else if (level == 3){
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(normalNausea);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(normalPoison);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(weakFatigue);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakSlow);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakWeakness);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(normalNausea);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(normalPoison);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(weakFatigue);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakSlow);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakWeakness);}
 			event.setDamage(eventDamage * 1.25);
 		} else if (level == 4 || level == 5){
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(normalNausea);}
-			if (random.nextDouble() <= 0.10){player.addPotionEffect(normalPoison);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(weakFatigue);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(weakSlow);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(normalWeakness);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(normalNausea);}
+			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(normalPoison);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(weakFatigue);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakSlow);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(normalWeakness);}
 			event.setDamage(eventDamage * 1.5);
 		} else if (level == 6 || level == 7){
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(strongNausea);}
-			if (random.nextDouble() <= 0.10){player.addPotionEffect(normalPoison);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(normalFatigue);}
-			if (random.nextDouble() <= 0.16){player.addPotionEffect(normalSlow);}
-			if (random.nextDouble() <= 0.16){player.addPotionEffect(normalWeakness);}
-			if (random.nextDouble() <= 0.16){player.addPotionEffect(blindness);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongNausea);}
+			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(normalPoison);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(normalFatigue);}
+			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(normalSlow);}
+			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(normalWeakness);}
+			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(blindness);}
 			event.setDamage(eventDamage * 1.5);
 		} else if (level == 8 || level == 9){
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(strongNausea);}
-			if (random.nextDouble() <= 0.10){player.addPotionEffect(normalPoison);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(strongFatigue);}
-			if (random.nextDouble() <= 0.16){player.addPotionEffect(strongSlow);}
-			if (random.nextDouble() <= 0.16){player.addPotionEffect(strongWeakness);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(blindness);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongNausea);}
+			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(normalPoison);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongFatigue);}
+			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(strongSlow);}
+			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(strongWeakness);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(blindness);}
 			event.setDamage(eventDamage * 1.75);
 		} else if (level == 10){
-			if (random.nextDouble() <= 0.25){player.addPotionEffect(severeNausea);}
-			if (random.nextDouble() <= 0.10){player.addPotionEffect(strongPoison);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(severeFatigue);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(strongSlow);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(strongWeakness);}
-			if (random.nextDouble() <= 0.33){player.addPotionEffect(blindness);}
+			if (random.nextDouble() <= 0.25){livingEntity.addPotionEffect(severeNausea);}
+			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(strongPoison);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(severeFatigue);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongSlow);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongWeakness);}
+			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(blindness);}
 			event.setDamage(eventDamage * 2.0);
 		} else if (level == 11){
-			if (random.nextDouble() <= 0.33){player.addPotionEffect(severeNausea);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(severePoison);}
-			if (random.nextDouble() <= 0.33){player.addPotionEffect(severeFatigue);}
-			if (random.nextDouble() <= 0.20){player.addPotionEffect(severeSlow);}
-			if (random.nextDouble() <= 0.33){player.addPotionEffect(severeWeakness);}
-			if (random.nextDouble() <= 0.66){player.addPotionEffect(blindness);}
+			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeNausea);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(severePoison);}
+			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeFatigue);}
+			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(severeSlow);}
+			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeWeakness);}
+			if (random.nextDouble() <= 0.66){livingEntity.addPotionEffect(blindness);}
 			event.setDamage(eventDamage * 2.25);
 		} else if (level == 12){
-			if (random.nextDouble() <= 0.66){player.addPotionEffect(severeNausea);}
-			if (random.nextDouble() <= 0.15){player.addPotionEffect(severeWither);}
-			if (random.nextDouble() <= 0.33){player.addPotionEffect(severeFatigue);}
-			if (random.nextDouble() <= 0.33){player.addPotionEffect(severeSlow);}
-			if (random.nextDouble() <= 0.66){player.addPotionEffect(severeWeakness);}
-			if (random.nextDouble() <= 0.66){player.addPotionEffect(blindness);}
+			if (random.nextDouble() <= 0.66){livingEntity.addPotionEffect(severeNausea);}
+			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(severeWither);}
+			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeFatigue);}
+			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeSlow);}
+			if (random.nextDouble() <= 0.66){livingEntity.addPotionEffect(severeWeakness);}
+			if (random.nextDouble() <= 0.66){livingEntity.addPotionEffect(blindness);}
 			event.setDamage(eventDamage * 2.5);
 		}
 	}

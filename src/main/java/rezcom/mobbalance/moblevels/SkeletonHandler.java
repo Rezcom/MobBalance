@@ -17,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
@@ -62,7 +64,11 @@ public class SkeletonHandler implements Listener {
 			return;
 		}
 
-		skeleton.setMetadata("RezLevel",new FixedMetadataValue(Main.thisPlugin, level));
+		PersistentDataContainer skeletonPDC = skeleton.getPersistentDataContainer();
+		skeletonPDC.set(MobLevelHandler.MobLevel, PersistentDataType.INTEGER, level);
+		MobLevelHandler.checkElite(skeleton);
+
+
 		EntityEquipment entityEquipment = skeleton.getEquipment();
 		Random random = new Random();
 		Main.sendDebugMessage("Spawning a Level " + level + " skeleton.",skeletonDebug);
@@ -107,10 +113,8 @@ public class SkeletonHandler implements Listener {
 		}
 
 		Skeleton skeleton = (Skeleton) event.getEntity();
-		if (!(skeleton.hasMetadata("RezLevel"))){return;}
 
-		List<MetadataValue> metadataValueList = skeleton.getMetadata("RezLevel");
-		int level = metadataValueList.get(metadataValueList.size() - 1).asInt();
+		int level = MobLevelHandler.getMobLevel(skeleton);
 
 		double eventDamage = event.getDamage();
 
