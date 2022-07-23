@@ -218,4 +218,12 @@ public class WolfGeneralHandler implements Listener {
         return null;
     }
 
+    public static boolean isCorrectWolf(Entity entity, DyeColor color){
+        if (!(entity instanceof Wolf)){
+            return false;
+        }
+        Wolf wolf = (Wolf) entity;
+        return wolf.isTamed() && (wolf.getCollarColor() == color);
+    }
+
 }

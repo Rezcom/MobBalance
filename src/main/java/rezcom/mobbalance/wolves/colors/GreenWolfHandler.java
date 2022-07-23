@@ -137,7 +137,7 @@ public class GreenWolfHandler implements Listener {
     @EventHandler
     void onWolfAttackEnemy(EntityDamageByEntityEvent event){
 
-        if (!(event.getDamager() instanceof Wolf) || !(((Wolf) event.getDamager()).isTamed()) || !(((Wolf) event.getDamager()).getCollarColor() == DyeColor.GREEN)){
+        if (!WolfGeneralHandler.isCorrectWolf(event.getDamager(), DyeColor.GREEN)){
             return;
         }
 
@@ -162,7 +162,7 @@ public class GreenWolfHandler implements Listener {
     // Green wolves evade hits
     @EventHandler
     void onWolfGetsHit(EntityDamageByEntityEvent event){
-        if (!(event.getEntity() instanceof Wolf) || event.getDamager() instanceof Player || !(((Wolf) event.getEntity()).getCollarColor() == DyeColor.GREEN)){
+        if ((!WolfGeneralHandler.isCorrectWolf(event.getEntity(),DyeColor.GREEN)) || event.getDamager() instanceof Player){
             return;
         }
         Wolf wolf = (Wolf) event.getEntity();
@@ -198,7 +198,7 @@ public class GreenWolfHandler implements Listener {
             if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
         }
-        applyDashToPlayer(player,wolf);
+        applyDashToPlayer(player);
     }
 
     // Players can dash upon striking an enemy if a green wolf is nearby
@@ -216,7 +216,7 @@ public class GreenWolfHandler implements Listener {
         int level = WolfGeneralHandler.getWolfLevel(wolf);
         double dashChance = dashChanceMap.get(level);
         if (random.nextDouble() <= dashChance){
-            applyDashToPlayer(player,wolf);
+            applyDashToPlayer(player);
         }
     }
 
@@ -233,7 +233,7 @@ public class GreenWolfHandler implements Listener {
             if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
         }
-        applyDashToPlayer(player,wolf);
+        applyDashToPlayer(player);
 
     }
 
@@ -264,17 +264,16 @@ public class GreenWolfHandler implements Listener {
 
         Player player = event.getPlayer();
         Vector playerVelocity = player.getVelocity();
-        playerVelocity.setX((newVector.getX() * 4.5) + playerVelocity.getX());
-        playerVelocity.setZ((newVector.getZ() * 4.5) + playerVelocity.getZ());
+        playerVelocity.setX((newVector.getX() * 6.5) + playerVelocity.getX());
+        playerVelocity.setZ((newVector.getZ() * 6.5) + playerVelocity.getZ());
         player.setVelocity(playerVelocity);
         currentlyDashingPlayers.remove(player.getUniqueId());
     }
 
-    void applyDashToPlayer(Player player, Wolf wolf){
+    void applyDashToPlayer(Player player){
 
-        currentlyDashingPlayers.add(player.getUniqueId());
         currentlyInvulPlayers.add(player.getUniqueId());
-        WolfDebugCommand.wolfDebugMessage(wolf, "Applied speed from " + wolf.getName() + " and added to hashset");
+        currentlyDashingPlayers.add(player.getUniqueId());
 
         new BukkitRunnable() {
             @Override
