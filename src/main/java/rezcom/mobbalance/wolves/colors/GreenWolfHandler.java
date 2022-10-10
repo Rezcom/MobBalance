@@ -193,7 +193,7 @@ public class GreenWolfHandler implements Listener {
             return;
         }
         Player player = event.getEntity().getKiller();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0, DyeColor.GREEN,32);
+        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0, DyeColor.GREEN,8);
         if (wolf == null){
             if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
@@ -208,7 +208,7 @@ public class GreenWolfHandler implements Listener {
             return;
         }
         Player player = (Player) event.getDamager();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0,DyeColor.GREEN,32);
+        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0,DyeColor.GREEN,8);
         if (wolf == null){
             return;
         }
@@ -228,7 +228,7 @@ public class GreenWolfHandler implements Listener {
         }
 
         Player player = (Player) event.getDamager();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,30,DyeColor.GREEN,32);
+        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,30,DyeColor.GREEN,8);
         if (wolf == null){
             if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
@@ -247,7 +247,7 @@ public class GreenWolfHandler implements Listener {
         Player player = (Player) event.getEntity();
         if (currentlyInvulPlayers.contains(player.getUniqueId())){
             event.setDamage(0.0);
-            player.getWorld().playSound(player.getLocation(),Sound.ITEM_ARMOR_EQUIP_ELYTRA,1.2f,2.1f);
+            player.getWorld().playSound(player.getLocation(),Sound.ITEM_ARMOR_EQUIP_ELYTRA,1.6f,2.1f);
             if (WolfDebugCommand.wolfDebug){player.sendMessage("Evaded an attack!");}
         }
 
