@@ -119,7 +119,7 @@ public class BrownWolfHandler implements Listener {
             //Main.sendDebugMessage("Thrown in air", WolfDebugCommand.wolfDebug);
 
             // Should armor be ripped off?
-            if (random.nextDouble() <= 0.33 && (victim instanceof LivingEntity)){
+            if (random.nextDouble() <= 0.20 && (victim instanceof LivingEntity)){
                 // Yessir!
                 LivingEntity livingVictim = (LivingEntity) victim;
                 EntityEquipment entityEquipment = livingVictim.getEquipment();

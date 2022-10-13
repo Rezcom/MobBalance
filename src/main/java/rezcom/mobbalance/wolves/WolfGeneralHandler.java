@@ -3,12 +3,15 @@ package rezcom.mobbalance.wolves;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Warning;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -17,12 +20,15 @@ import rezcom.mobbalance.Main;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class WolfGeneralHandler implements Listener {
 
     public static final NamespacedKey WolfLevel = new NamespacedKey(Main.thisPlugin, "WolfLevel");
     public static final NamespacedKey WolfEXP = new NamespacedKey(Main.thisPlugin, "WolfEXP");
+    public static final NamespacedKey hurtByWolf = new NamespacedKey(Main.thisPlugin, "hurtByWolf");
 
     public static final Map<Integer,Integer> wolfLevels = new HashMap<Integer,Integer>(){{
         put(0,0);
@@ -61,6 +67,36 @@ public class WolfGeneralHandler implements Listener {
     }
 
     @EventHandler
+    void onWolfHurtEnemy(EntityDamageByEntityEvent event){
+        if (!(event.getDamager() instanceof Wolf) || !(((Wolf) event.getDamager()).isTamed()) || (event.getEntity() instanceof Player) || !(event.getEntity() instanceof LivingEntity)){
+            return;
+        }
+
+        LivingEntity victim = (LivingEntity) event.getEntity();
+        PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
+        victimPDC.set(hurtByWolf, PersistentDataType.INTEGER, 1);
+
+    }
+
+    @EventHandler
+    void onEnemyDeathWolfEXP(EntityDeathEvent event){
+        LivingEntity victim = (LivingEntity) event.getEntity();
+        PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
+        if (victimPDC.get(hurtByWolf, PersistentDataType.INTEGER) == null){
+            return;
+        }
+        for (LivingEntity entity : victim.getLocation().getNearbyLivingEntities(16)){
+            // Level up wolves
+            if (entity instanceof Wolf){
+                Wolf wolf = (Wolf) entity;
+                if (!wolf.isTamed()){return;}
+                increaseWolfEXP(wolf,1);
+            }
+        }
+
+    }
+
+    @EventHandler
     void checkWolfStats(PlayerInteractEntityEvent event){
 
         // When a player right-clicks a tamed wolf with a bone, it should tell the players its stats.
@@ -71,20 +107,42 @@ public class WolfGeneralHandler implements Listener {
 
         Player player = event.getPlayer();
         EquipmentSlot equipmentSlot = event.getHand();
-        if ((equipmentSlot == EquipmentSlot.HAND && player.getInventory().getItemInMainHand().getType() != Material.BONE)
-                || (equipmentSlot == EquipmentSlot.OFF_HAND && player.getInventory().getItemInOffHand().getType() != Material.BONE)){
-            return;
+        Material material = null;
+        if (equipmentSlot == EquipmentSlot.HAND){
+            material = player.getInventory().getItemInMainHand().getType();
+        } else if (equipmentSlot == EquipmentSlot.OFF_HAND){
+            material = player.getInventory().getItemInOffHand().getType();
+        } else {
+            Main.logger.log(Level.WARNING,"Player right clicked a wolf with neither the main nor off hand?");
         }
-        // Player right-clicked with a Bone.
+        if (material == null){return;}
+
         Wolf wolf = (Wolf) event.getRightClicked();
         int level = getWolfLevel(wolf);
         int exp = getWolfEXP(wolf);
+        DyeColor color = wolf.getCollarColor();
 
-        //player.sendMessage("GetOwnerUUID: " + wolf.getOwnerUniqueId() + "\nplayer.getUniqueID: " + player.getUniqueId());
+        if (material == Material.BONE){
+            // Player right-clicked with a Bone.
+            player.sendMessage( wolf.getName()+ " is a Level " + level + " " + wolf.getCollarColor() + " wolf, with " + exp + " total EXP.");
+            if (level < 12 && exp >= wolfLevels.get(level + 1)){
+                player.sendMessage( wolf.getName() + " is eager to Level up! Give them a " + WolfColorHandler.favoriteItems.get(color) + " soon!");
+            }
+            return;
+        }
 
-        player.sendMessage( wolf.getName()+ " is a Level " + level + " " + wolf.getCollarColor() + " wolf, with " + exp + " total EXP.");
-        if (level < 12 && exp >= wolfLevels.get(level + 1)){
-            player.sendMessage( wolf.getName() + " is eager to Level up! Give them a " + WolfColorHandler.favoriteItems.get(wolf.getCollarColor()) + " soon!");
+        Material favorite = WolfColorHandler.favoriteItems.get(color);
+        if (exp >= wolfLevels.get(level + 1) && (material == favorite)){
+            ItemStack itemStack;
+            if (equipmentSlot == EquipmentSlot.HAND){
+                itemStack = player.getInventory().getItemInMainHand();
+            } else {
+                itemStack = player.getInventory().getItemInOffHand();
+            }
+            itemStack.subtract();
+            PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
+            wolfPDC.set(WolfLevel,PersistentDataType.INTEGER,level + 1);
+            player.sendMessage(wolf.getName() + " leveled up! " + wolf.getName() + " is now level " + (level + 1) + "!");
         }
     }
 
@@ -114,6 +172,19 @@ public class WolfGeneralHandler implements Listener {
         }
 
         return wolfPDC.get(WolfEXP, PersistentDataType.INTEGER);
+    }
+
+    public static void increaseWolfEXP(Wolf wolf, int amount){
+
+        // Increases a Wolf's total EXP by amount passed
+
+        PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
+        int curEXP = getWolfEXP(wolf);
+        Random random = new Random();
+        if (random.nextDouble() <= 0.20){
+            wolfPDC.set(WolfEXP,PersistentDataType.INTEGER,curEXP + amount);
+        }
+
     }
 
     static int convertEXPtoLevel(int exp){

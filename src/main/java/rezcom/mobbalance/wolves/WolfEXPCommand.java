@@ -1,5 +1,6 @@
 package rezcom.mobbalance.wolves;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -41,12 +42,13 @@ public class WolfEXPCommand implements CommandExecutor {
             sender.sendMessage("Only players can use this command.");
             return false;
         }
-        if (args.length != 1){
-            sender.sendMessage("Must enter an EXP amount. Usage: /MBWolfEXP <XP Amount>");
+        if (args.length < 1 || args.length > 2){
+            sender.sendMessage("Enter an EXP amount and LevelUp Option. Usage: /MBWolfEXP <XP Amount> [LevelUp]. Use LevelUp if you want the wolf to Level Up with the EXP change.");
             return false;
         }
         try {
             int exp = Integer.parseInt(args[0]);
+            boolean levelup = args.length == 2 && args[1].equals("LevelUp");
             Player player = (Player) sender;
             Wolf closestWolf = getClosestTamedWolf(player);
             if (closestWolf == null){
@@ -56,7 +58,10 @@ public class WolfEXPCommand implements CommandExecutor {
 
             PersistentDataContainer closestPDC = closestWolf.getPersistentDataContainer();
             closestPDC.set(WolfGeneralHandler.WolfEXP, PersistentDataType.INTEGER,exp);
-            closestPDC.set(WolfGeneralHandler.WolfLevel,PersistentDataType.INTEGER,WolfGeneralHandler.convertEXPtoLevel(exp));
+            if (levelup){
+                closestPDC.set(WolfGeneralHandler.WolfLevel,PersistentDataType.INTEGER,WolfGeneralHandler.convertEXPtoLevel(exp));
+            }
+
 
             sender.sendMessage("EXP change applied to " + closestWolf.getName());
             return true;
