@@ -14,6 +14,10 @@ public class WolfDebugCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args){
+        if (!(sender.hasPermission("MobBalance.WolfDebug"))){
+            sender.sendMessage("You do not have permission.");
+            return false;
+        }
         if (wolfDebug){
             sender.sendMessage("Wolf debug toggled off.");
             wolfDebug = false;

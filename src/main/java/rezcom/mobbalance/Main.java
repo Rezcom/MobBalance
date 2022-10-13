@@ -6,10 +6,7 @@ import rezcom.mobbalance.moblevels.CreeperHandler;
 import rezcom.mobbalance.moblevels.SkeletonHandler;
 import rezcom.mobbalance.moblevels.SpiderHandler;
 import rezcom.mobbalance.moblevels.ZombieHandler;
-import rezcom.mobbalance.wolves.WolfColorHandler;
-import rezcom.mobbalance.wolves.WolfDebugCommand;
-import rezcom.mobbalance.wolves.WolfEXPCommand;
-import rezcom.mobbalance.wolves.WolfGeneralHandler;
+import rezcom.mobbalance.wolves.*;
 import rezcom.mobbalance.wolves.colors.BlueWolfHandler;
 import rezcom.mobbalance.wolves.colors.BrownWolfHandler;
 import rezcom.mobbalance.wolves.colors.GreenWolfHandler;
@@ -52,6 +49,7 @@ public final class Main extends JavaPlugin {
 		try {
 			this.getCommand("MBWolfDebug").setExecutor(new WolfDebugCommand());
 			this.getCommand("MBWolfEXP").setExecutor(new WolfEXPCommand());
+			this.getCommand("MBWolfRandomize").setExecutor(new WolfRandomizeCommand());
 		} catch (NullPointerException e){
 			logger.log(Level.SEVERE,"Commands weren't initialized correctly! It returned a nullpointer exception.");
 		}

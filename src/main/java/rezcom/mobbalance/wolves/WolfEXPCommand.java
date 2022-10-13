@@ -33,8 +33,12 @@ public class WolfEXPCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args){
+        if (!(sender.hasPermission("MobBalance.WolfEXP"))){
+            sender.sendMessage("You do not have permission");
+            return false;
+        }
         if (!(sender instanceof Player)){
-            sender.sendMessage("Only players can use htis command.");
+            sender.sendMessage("Only players can use this command.");
             return false;
         }
         if (args.length != 1){

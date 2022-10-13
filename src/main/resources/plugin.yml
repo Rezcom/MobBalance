@@ -11,3 +11,7 @@ commands:
     description: Applies a set EXP value to the closest tamed wolf to the player.
     usage: /MBWolfEXP
     permission: MobBalance.WolfEXP
+  MBWolfRandomize:
+    description: Randomizes the color of collars of all tamed wolves in a World. Uses only Wild probabilities.
+    usage: /MBWolfRandomize
+    permission: MobBalance.WolfRandomize
