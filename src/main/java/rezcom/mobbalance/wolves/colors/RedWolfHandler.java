@@ -38,7 +38,7 @@ public class RedWolfHandler implements Listener {
     private static final Map<Integer,Double> damageResist = new HashMap<Integer,Double>(){{
         put(0, 0.60);
         put(1, 0.60);
-        put(2, 0.65);
+        put(2, 0.60);
         put(3, 0.65);
         put(4, 0.65);
         put(5, 0.70);

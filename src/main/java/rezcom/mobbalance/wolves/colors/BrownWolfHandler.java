@@ -20,13 +20,11 @@ import rezcom.mobbalance.Main;
 import rezcom.mobbalance.wolves.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
-import javax.management.InstanceNotFoundException;
 import java.util.*;
 
 public class BrownWolfHandler implements Listener {
 
     public static final NamespacedKey inAirExtraDamage = new NamespacedKey(Main.thisPlugin, "inAirExtraDamage");
-
 
     private static final ArrayList<Material> diamondArmor = new ArrayList<>(Arrays.asList(
             Material.DIAMOND_HELMET,

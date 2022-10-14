@@ -7,10 +7,7 @@ import rezcom.mobbalance.moblevels.SkeletonHandler;
 import rezcom.mobbalance.moblevels.SpiderHandler;
 import rezcom.mobbalance.moblevels.ZombieHandler;
 import rezcom.mobbalance.wolves.*;
-import rezcom.mobbalance.wolves.colors.BlueWolfHandler;
-import rezcom.mobbalance.wolves.colors.BrownWolfHandler;
-import rezcom.mobbalance.wolves.colors.GreenWolfHandler;
-import rezcom.mobbalance.wolves.colors.RedWolfHandler;
+import rezcom.mobbalance.wolves.colors.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +42,7 @@ public final class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new BlueWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new GreenWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new BrownWolfHandler(), this);
+		getServer().getPluginManager().registerEvents(new YellowWolfHandler(), this);
 		// Register Commands
 		try {
 			this.getCommand("MBWolfDebug").setExecutor(new WolfDebugCommand());
