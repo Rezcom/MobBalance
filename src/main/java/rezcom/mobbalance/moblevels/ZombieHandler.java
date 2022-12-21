@@ -63,8 +63,6 @@ public class ZombieHandler implements Listener {
 			return;
 		}
 
-
-
 		PersistentDataContainer zombiePDC = zombie.getPersistentDataContainer();
 		zombiePDC.set(MobLevelHandler.MobLevel, PersistentDataType.INTEGER, level);
 		MobLevelHandler.checkElite(zombie);
@@ -126,6 +124,7 @@ public class ZombieHandler implements Listener {
 		// Whenever a player attacks a zombie, the zombie takes reduced damage dependent on level.
 
 		if (!(event.getEntity() instanceof Zombie) || !(event.getDamager() instanceof Player || (event.getDamager() instanceof Wolf))){
+			// The victim wasn't a zombie, or the damager wasn't a player/wolf.
 			return;
 		}
 
@@ -138,11 +137,11 @@ public class ZombieHandler implements Listener {
 		if (level < 4){
 			event.setDamage(eventDamage * 0.70);
 		} else if (level <= 6){
-			event.setDamage(eventDamage * 0.55);
+			event.setDamage(eventDamage * 0.50);
 		} else if (level <= 8){
-			event.setDamage(eventDamage * 0.40);
+			event.setDamage(eventDamage * 0.30);
 		} else if (level <= 10){
-			event.setDamage(eventDamage * 0.25);
+			event.setDamage(eventDamage * 0.20);
 		} else if (level <= 12){
 			event.setDamage(eventDamage * 0.10);
 		}

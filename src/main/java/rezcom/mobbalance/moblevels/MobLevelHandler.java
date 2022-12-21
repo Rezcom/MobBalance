@@ -5,9 +5,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import rezcom.mobbalance.Main;
 import java.util.*;
 import java.util.logging.Level;
 
-public class MobLevelHandler {
+public class MobLevelHandler implements Listener {
 
 	public static boolean crimsonNight = false;
 	public static boolean mobHandlerDebug = false;
@@ -76,18 +76,17 @@ public class MobLevelHandler {
 		// Please only call this if a player killed
 		// with 6 or less kills in the chunk counter.
 		// This method does NOT check that those conditions are fulfilled.
+		//Main.logger.log(Level.INFO, "Starting EXP: " + event.getDroppedExp());
 		LivingEntity livingEntity = event.getEntity();
-		if (livingEntity.hasMetadata("RezLevel")){
-			List<MetadataValue> metadataValueList = livingEntity.getMetadata("RezLevel");
-			MetadataValue value = metadataValueList.get(metadataValueList.size() - 1);
-			if (value.asInt() >= 3 && value.asInt() <= 5){
-				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 1.85));
-			} else if (value.asInt() > 5 && value.asInt() <= 9){
-				event.setDroppedExp((int) Math.round(event.getDroppedExp() * 2.25));
-			} else if (value.asInt() > 9){
-				event.setDroppedExp(event.getDroppedExp() * 3);
-			}
+		int level = getMobLevel(livingEntity);
+		if (level >= 3 && level <= 5){
+			event.setDroppedExp((int) Math.round(event.getDroppedExp() * 1.85));
+		} else if (level > 5 && level <= 9){
+			event.setDroppedExp((int) Math.round(event.getDroppedExp() * 2.25));
+		} else if (level > 9){
+			event.setDroppedExp(event.getDroppedExp() * 3);
 		}
+		//Main.logger.log(Level.INFO, "Calculated EXP: " + event.getDroppedExp());
 	}
 
 	private static boolean isValid(@NotNull Map<Integer,Double> probMap){
@@ -136,7 +135,7 @@ public class MobLevelHandler {
 
 	public static int getMobLevel(LivingEntity livingEntity){
 		PersistentDataContainer livingEntityPDC = livingEntity.getPersistentDataContainer();
-		if (livingEntityPDC.get(MobLevel, PersistentDataType.INTEGER) == null){
+		if (!livingEntityPDC.has(MobLevel)){
 			livingEntityPDC.set(MobLevel, PersistentDataType.INTEGER, 0);
 			return 0;
 		}
@@ -149,7 +148,7 @@ public class MobLevelHandler {
 			livingEntity.customName(eliteCustomName);
 			livingEntity.setCustomNameVisible(true);
 		} else if (level == 12){
-			Main.logger.log(Level.INFO,"CRIMSON ENEMY SPAWNED at " + livingEntity.getLocation());
+			//Main.logger.log(Level.INFO,"CRIMSON ENEMY SPAWNED at " + livingEntity.getLocation());
 			livingEntity.customName(crimsonCustomName);
 			livingEntity.setCustomNameVisible(true);
 		}

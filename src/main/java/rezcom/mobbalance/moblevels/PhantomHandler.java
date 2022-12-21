@@ -9,8 +9,6 @@ public class PhantomHandler implements Listener {
 
     @EventHandler
     void onPhantomSpawn(CreatureSpawnEvent event){
-        if (event.getEntity() instanceof Phantom){
-            event.setCancelled(true);
-        }
+
     }
 }

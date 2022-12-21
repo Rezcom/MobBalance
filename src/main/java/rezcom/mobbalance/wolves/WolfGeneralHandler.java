@@ -82,7 +82,8 @@ public class WolfGeneralHandler implements Listener {
     void onEnemyDeathWolfEXP(EntityDeathEvent event){
         LivingEntity victim = (LivingEntity) event.getEntity();
         PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
-        if (victimPDC.get(hurtByWolf, PersistentDataType.INTEGER) == null){
+        if (!victimPDC.has(hurtByWolf)){
+            // Wasn't hurt by a wolf
             return;
         }
         for (LivingEntity entity : victim.getLocation().getNearbyLivingEntities(16)){
@@ -151,7 +152,7 @@ public class WolfGeneralHandler implements Listener {
         // If the wolf doesn't have a level or EXP, sets them to 0.
 
         PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
-        if (wolfPDC.get(WolfLevel, PersistentDataType.INTEGER) == null){
+        if (!wolfPDC.has(WolfLevel)){
             wolfPDC.set(WolfLevel, PersistentDataType.INTEGER,0);
             wolfPDC.set(WolfEXP, PersistentDataType.INTEGER, 0);
             return 0;
@@ -165,7 +166,7 @@ public class WolfGeneralHandler implements Listener {
         // Returns the EXP of the wolf.
         // If the wolf doesn't have a level or EXP, sets them to 0.
         PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
-        if (wolfPDC.get(WolfEXP, PersistentDataType.INTEGER) == null){
+        if (!wolfPDC.has(WolfLevel) || !wolfPDC.has(WolfEXP)){
             wolfPDC.set(WolfLevel, PersistentDataType.INTEGER,0);
             wolfPDC.set(WolfEXP, PersistentDataType.INTEGER, 0);
             return 0;

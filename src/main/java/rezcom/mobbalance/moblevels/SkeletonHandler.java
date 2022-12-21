@@ -2,6 +2,7 @@ package rezcom.mobbalance.moblevels;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -21,17 +22,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
 
-import java.util.Collections;
 import java.util.Random;
 
 public class SkeletonHandler implements Listener {
 
-	public static boolean skeletonDebug = false;
-	public static final Component decayIdentifier =
-			Component.text("Decay Bow");
+	public static final NamespacedKey weaknessBow = new NamespacedKey(Main.thisPlugin, "weaknessBow");
 
-	public static final Component strongDecayIdentifier =
-			Component.text("Strong Decay Bow");
+	public static boolean skeletonDebug = false;
 
 	private static final PotionEffect speedEffect = new PotionEffect(PotionEffectType.SPEED,Integer.MAX_VALUE,1);
 	private static final PotionEffect speedStrong = new PotionEffect(PotionEffectType.SPEED,Integer.MAX_VALUE,2);
@@ -80,25 +77,27 @@ public class SkeletonHandler implements Listener {
 	void onSkeletonShoot(EntityShootBowEvent event){
 		ItemStack bow = event.getBow();
 		Main.sendDebugMessage("Someone shot",skeletonDebug);
-		if (bow == null || !bow.hasItemMeta()){return;}
-		Main.sendDebugMessage("Bow is correct",skeletonDebug);
-		ItemMeta bowMeta = bow.getItemMeta();
-		if (!bowMeta.hasLore()){return;}
-		Main.sendDebugMessage("Bow has lore",skeletonDebug);
+		if (bow == null){return;}
+		Main.sendDebugMessage("Bow is not null",skeletonDebug);
 
-		if (bow.lore().contains(decayIdentifier)){
+		if (isWeaknessBow(bow)){
 			Main.sendDebugMessage("Setting projectile",skeletonDebug);
 			Arrow arrow = (Arrow) event.getProjectile();
-			PotionEffect weakness = new PotionEffect(PotionEffectType.WEAKNESS,200,1);
+			PotionEffect weakness = new PotionEffect(PotionEffectType.WEAKNESS,200,2);
 			arrow.addCustomEffect(weakness,true);
 			event.setProjectile(arrow);
-		} else if (bow.lore().contains(strongDecayIdentifier)){
-			Main.sendDebugMessage("Setting stronger",skeletonDebug);
-			Arrow arrow = (Arrow) event.getProjectile();
-			PotionEffect strongWeakness = new PotionEffect(PotionEffectType.WEAKNESS,200,2);
-			arrow.addCustomEffect(strongWeakness,true);
-			event.setProjectile(arrow);
 		}
+	}
+
+	boolean isWeaknessBow(ItemStack bow){
+		// Is this bow a weakness bow?
+		if (bow.getType() != Material.BOW){
+			// Not even a bow
+			return false;
+		}
+		ItemMeta itemMeta = bow.getItemMeta();
+		PersistentDataContainer bowPDC = itemMeta.getPersistentDataContainer();
+		return bowPDC.has(weaknessBow);
 	}
 
 	@EventHandler
@@ -119,8 +118,10 @@ public class SkeletonHandler implements Listener {
 			event.setDamage(eventDamage * 0.70);
 		} else if (level <= 9){
 			event.setDamage(eventDamage * 0.50);
-		} else if (level <= 12){
+		} else if (level <= 11){
 			event.setDamage(eventDamage * 0.25);
+		} else if (level == 12){
+			event.setDamage(eventDamage * 0.10);
 		}
 	}
 
@@ -199,7 +200,6 @@ public class SkeletonHandler implements Listener {
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowMeta = bow.getItemMeta();
 
-		bowMeta.lore(Collections.singletonList(decayIdentifier));
 
 		bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK,random.nextDouble() <= 0.80 ? 1 : 2,true);
 		bowMeta.addEnchant(random.nextDouble() <= 0.5 ? Enchantment.ARROW_DAMAGE : Enchantment.ARROW_FIRE, 1, true);
@@ -211,8 +211,6 @@ public class SkeletonHandler implements Listener {
 		entityEquipment.setItemInMainHandDropChance(0.0f);
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowMeta = bow.getItemMeta();
-
-		bowMeta.lore(Collections.singletonList(decayIdentifier));
 
 		bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK, random.nextDouble() <= 0.66 ? 1 : 2, true);
 		bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, random.nextDouble() <= 0.66 ? 1 : 2, true);
@@ -228,7 +226,8 @@ public class SkeletonHandler implements Listener {
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowMeta = bow.getItemMeta();
 
-		bowMeta.lore(Collections.singletonList(strongDecayIdentifier));
+		PersistentDataContainer bowPDC = bowMeta.getPersistentDataContainer();
+		bowPDC.set(weaknessBow,PersistentDataType.INTEGER,1);
 
 		bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK, random.nextDouble() <= 0.66 ? 1 : 2,true);
 		bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, random.nextDouble() <= 0.66 ? 1 : 2,true);
@@ -242,7 +241,8 @@ public class SkeletonHandler implements Listener {
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowMeta = bow.getItemMeta();
 
-		bowMeta.lore(Collections.singletonList(strongDecayIdentifier));
+		PersistentDataContainer bowPDC = bowMeta.getPersistentDataContainer();
+		bowPDC.set(weaknessBow,PersistentDataType.INTEGER,1);
 
 		bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK, random.nextDouble() <= 0.66 ? 2 : 3,true);
 		bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, random.nextDouble() <= 0.66 ? 2 : 3,true);
@@ -256,7 +256,8 @@ public class SkeletonHandler implements Listener {
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowMeta = bow.getItemMeta();
 
-		bowMeta.lore(Collections.singletonList(strongDecayIdentifier));
+		PersistentDataContainer bowPDC = bowMeta.getPersistentDataContainer();
+		bowPDC.set(weaknessBow,PersistentDataType.INTEGER,1);
 
 		bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK, 3,true);
 		bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, random.nextDouble() <= 0.66 ? 3 : 4,true);
@@ -270,7 +271,8 @@ public class SkeletonHandler implements Listener {
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowMeta = bow.getItemMeta();
 
-		bowMeta.lore(Collections.singletonList(strongDecayIdentifier));
+		PersistentDataContainer bowPDC = bowMeta.getPersistentDataContainer();
+		bowPDC.set(weaknessBow,PersistentDataType.INTEGER,1);
 
 		bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK, 3,true);
 		bowMeta.addEnchant(Enchantment.ARROW_DAMAGE, random.nextDouble() <= 0.66 ? 4 : 5,true);

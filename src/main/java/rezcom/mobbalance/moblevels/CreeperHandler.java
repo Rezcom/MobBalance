@@ -77,46 +77,39 @@ public class CreeperHandler implements Listener {
 			creeper.addPotionEffect(normalSpeed);
 			creeper.addPotionEffect(normalResist);
 			creeper.setPowered(false);
-			creeper.setExplosionRadius(4);
 		} else if (level == 6){
 			creeper.addPotionEffect(normalSpeed);
 			creeper.addPotionEffect(normalResist);
 			creeper.setPowered(random.nextDouble() <= 0.10);
 			creeper.setExplosionRadius(4);
-			creeper.setMaxFuseTicks(25);
 		} else if (level == 7){
 			creeper.addPotionEffect(normalSpeed);
 			creeper.addPotionEffect(normalResist);
 			creeper.setPowered(random.nextDouble() <= 0.25);
-			creeper.setExplosionRadius(5);
 			creeper.setMaxFuseTicks(25);
 		} else if (level == 8){
 			creeper.addPotionEffect(normalSpeed);
 			creeper.addPotionEffect(normalResist);
 			creeper.addPotionEffect(fireResist);
 			creeper.setPowered(random.nextDouble() <= 0.33);
-			creeper.setExplosionRadius(5);
 			creeper.setMaxFuseTicks(20);
 		} else if (level == 9){
 			creeper.addPotionEffect(normalSpeed);
 			creeper.addPotionEffect(strongResist);
 			creeper.addPotionEffect(fireResist);
 			creeper.setPowered(random.nextDouble() <= 0.50);
-			creeper.setExplosionRadius(6);
 			creeper.setMaxFuseTicks(20);
 		} else if (level == 10){
 			creeper.addPotionEffect(normalSpeed);
 			creeper.addPotionEffect(strongResist);
 			creeper.addPotionEffect(fireResist);
 			creeper.setPowered(random.nextDouble() <= 0.66);
-			creeper.setExplosionRadius(6);
 			creeper.setMaxFuseTicks(20);
 		} else if (level == 11){
 			creeper.addPotionEffect(strongSpeed);
 			creeper.addPotionEffect(strongResist);
 			creeper.addPotionEffect(fireResist);
 			creeper.setPowered(random.nextDouble() <= 0.75);
-			creeper.setExplosionRadius(7);
 			creeper.setMaxFuseTicks(15);
 		} else if (level == 12){
 			creeper.addPotionEffect(strongSpeed);
@@ -124,7 +117,6 @@ public class CreeperHandler implements Listener {
 			creeper.addPotionEffect(fireResist);
 			creeper.addPotionEffect(invisibility);
 			creeper.setPowered(true);
-			creeper.setExplosionRadius(7);
 			creeper.setMaxFuseTicks(15);
 		}
 

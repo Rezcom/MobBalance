@@ -231,7 +231,7 @@ public class SpiderHandler implements Listener {
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(weakFatigue);}
 			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(weakSlow);}
 			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(normalWeakness);}
-			event.setDamage(eventDamage * 1.5);
+			event.setDamage(eventDamage * 1.25);
 		} else if (level == 6 || level == 7){
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongNausea);}
 			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(normalPoison);}
@@ -239,7 +239,7 @@ public class SpiderHandler implements Listener {
 			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(normalSlow);}
 			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(normalWeakness);}
 			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(blindness);}
-			event.setDamage(eventDamage * 1.5);
+			event.setDamage(eventDamage * 1.25);
 		} else if (level == 8 || level == 9){
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongNausea);}
 			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(normalPoison);}
@@ -247,7 +247,7 @@ public class SpiderHandler implements Listener {
 			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(strongSlow);}
 			if (random.nextDouble() <= 0.16){livingEntity.addPotionEffect(strongWeakness);}
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(blindness);}
-			event.setDamage(eventDamage * 1.75);
+			event.setDamage(eventDamage * 1.5);
 		} else if (level == 10){
 			if (random.nextDouble() <= 0.25){livingEntity.addPotionEffect(severeNausea);}
 			if (random.nextDouble() <= 0.10){livingEntity.addPotionEffect(strongPoison);}
@@ -255,7 +255,7 @@ public class SpiderHandler implements Listener {
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongSlow);}
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(strongWeakness);}
 			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(blindness);}
-			event.setDamage(eventDamage * 2.0);
+			event.setDamage(eventDamage * 1.75);
 		} else if (level == 11){
 			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeNausea);}
 			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(severePoison);}
@@ -263,7 +263,7 @@ public class SpiderHandler implements Listener {
 			if (random.nextDouble() <= 0.20){livingEntity.addPotionEffect(severeSlow);}
 			if (random.nextDouble() <= 0.33){livingEntity.addPotionEffect(severeWeakness);}
 			if (random.nextDouble() <= 0.66){livingEntity.addPotionEffect(blindness);}
-			event.setDamage(eventDamage * 2.25);
+			event.setDamage(eventDamage * 2.0);
 		} else if (level == 12){
 			if (random.nextDouble() <= 0.66){livingEntity.addPotionEffect(severeNausea);}
 			if (random.nextDouble() <= 0.15){livingEntity.addPotionEffect(severeWither);}
