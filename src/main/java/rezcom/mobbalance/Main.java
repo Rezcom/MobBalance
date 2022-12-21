@@ -43,6 +43,7 @@ public final class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new GreenWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new BrownWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new YellowWolfHandler(), this);
+		getServer().getPluginManager().registerEvents(new BlackWolfHandler(),this);
 		// Register Commands
 		try {
 			this.getCommand("MBWolfDebug").setExecutor(new WolfDebugCommand());
