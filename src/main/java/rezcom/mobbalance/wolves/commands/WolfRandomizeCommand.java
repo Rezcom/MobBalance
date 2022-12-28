@@ -1,4 +1,4 @@
-package rezcom.mobbalance.wolves;
+package rezcom.mobbalance.wolves.commands;
 
 import org.bukkit.DyeColor;
 import org.bukkit.command.Command;
@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.jetbrains.annotations.NotNull;
+import rezcom.mobbalance.wolves.WolfColorHandler;
 
 public class WolfRandomizeCommand implements CommandExecutor {
 

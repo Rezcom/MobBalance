@@ -1,7 +1,6 @@
 package rezcom.mobbalance.wolves.colors;
 
 import org.bukkit.DyeColor;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -12,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfDebugCommand;
+import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.HashMap;

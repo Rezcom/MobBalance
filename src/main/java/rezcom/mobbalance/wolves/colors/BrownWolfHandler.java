@@ -17,7 +17,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfDebugCommand;
+import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.*;

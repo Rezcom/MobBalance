@@ -1,4 +1,4 @@
-package rezcom.mobbalance.wolves;
+package rezcom.mobbalance.wolves.commands;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.Location;
@@ -13,24 +13,11 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import rezcom.mobbalance.Main;
+import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 public class WolfEXPCommand implements CommandExecutor {
 
     // Command that sets the closest tamed wolf's EXP to a certain value.
-
-    private Wolf getClosestTamedWolf(Player player){
-        Location playerLocation = player.getLocation();
-        double shortest = 1000;
-        Entity closestWolf = null;
-        for (Entity entity : player.getNearbyEntities(10,10,10)){
-            double cur_dist = playerLocation.distance(entity.getLocation());
-            if ((entity instanceof Wolf) && (((Wolf) entity).isTamed()) && (cur_dist < shortest)){
-                shortest = cur_dist;
-                closestWolf = entity;
-            }
-        }
-        return (Wolf) closestWolf;
-    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args){
@@ -50,7 +37,7 @@ public class WolfEXPCommand implements CommandExecutor {
             int exp = Integer.parseInt(args[0]);
             boolean levelup = args.length == 2 && args[1].equals("LevelUp");
             Player player = (Player) sender;
-            Wolf closestWolf = getClosestTamedWolf(player);
+            Wolf closestWolf = WolfGeneralHandler.getClosestTamedWolf(player);
             if (closestWolf == null){
                 sender.sendMessage("No tamed wolf was found nearby.");
                 return false;

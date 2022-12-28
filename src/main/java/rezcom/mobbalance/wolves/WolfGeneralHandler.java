@@ -1,9 +1,6 @@
 package rezcom.mobbalance.wolves;
 
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Warning;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,16 +9,13 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import rezcom.mobbalance.Main;
+import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class WolfGeneralHandler implements Listener {
@@ -29,6 +23,11 @@ public class WolfGeneralHandler implements Listener {
     public static final NamespacedKey WolfLevel = new NamespacedKey(Main.thisPlugin, "WolfLevel");
     public static final NamespacedKey WolfEXP = new NamespacedKey(Main.thisPlugin, "WolfEXP");
     public static final NamespacedKey hurtByWolf = new NamespacedKey(Main.thisPlugin, "hurtByWolf");
+    public static final NamespacedKey WolfID = new NamespacedKey(Main.thisPlugin, "WolfID");
+
+    public static boolean wolfIDDebug = false;
+
+    public static final Random random = new Random();
 
     public static final Map<Integer,Integer> wolfLevels = new HashMap<Integer,Integer>(){{
         put(0,0);
@@ -74,24 +73,74 @@ public class WolfGeneralHandler implements Listener {
 
         LivingEntity victim = (LivingEntity) event.getEntity();
         PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
-        victimPDC.set(hurtByWolf, PersistentDataType.INTEGER, 1);
+        if (!victimPDC.has(hurtByWolf)){
+            int[] initial = {};
+            victimPDC.set(hurtByWolf,PersistentDataType.INTEGER_ARRAY,initial);
+            Main.sendDebugMessage(victim.getName() + "'s hurtByWolfArray initialized.", wolfIDDebug);
+        }
 
+        Wolf wolf = (Wolf) event.getDamager();
+        int wolfID = WolfGeneralHandler.getWolfID(wolf);
+        Main.sendDebugMessage(wolf.getName() + "'s ID: " + wolfID,wolfIDDebug);
+
+        int[] hurtByWolfArray = victimPDC.get(hurtByWolf,PersistentDataType.INTEGER_ARRAY);
+        victimPDC.set(hurtByWolf,PersistentDataType.INTEGER_ARRAY,addToArrayIfNoIDExists(hurtByWolfArray,wolfID));
+
+        if (victimPDC.get(hurtByWolf,PersistentDataType.INTEGER_ARRAY) == null){
+            Main.sendDebugMessage("PDC was null?",wolfIDDebug);
+        }
+
+        if (wolfIDDebug){
+            for (int i : Objects.requireNonNull(victimPDC.get(hurtByWolf, PersistentDataType.INTEGER_ARRAY))){
+                Main.sendDebugMessage(victim.getName() + " hit by ID: " + i,true);
+            }
+        }
+
+    }
+
+    boolean idExists(int[] array, int ID){
+        for (int i : array){
+            if (i == ID){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int[] addToArrayIfNoIDExists(int[] array, int ID){
+        if (idExists(array,ID)){
+            return array;
+        }
+        int size = array.length;
+        int[] newArray = new int[size + 1];
+        System.arraycopy(array, 0, newArray, 0, size);
+        newArray[size] = ID;
+        return newArray;
     }
 
     @EventHandler
     void onEnemyDeathWolfEXP(EntityDeathEvent event){
-        LivingEntity victim = (LivingEntity) event.getEntity();
+        LivingEntity victim = event.getEntity();
         PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
         if (!victimPDC.has(hurtByWolf)){
             // Wasn't hurt by a wolf
             return;
         }
+
+        int[] hurtByArray = victimPDC.get(hurtByWolf,PersistentDataType.INTEGER_ARRAY);
+        if (hurtByArray == null){
+            Main.sendDebugMessage("On Enemy Death, hurtByWolf was null??",wolfIDDebug);
+            return;
+        }
+
         for (LivingEntity entity : victim.getLocation().getNearbyLivingEntities(16)){
             // Level up wolves
             if (entity instanceof Wolf){
                 Wolf wolf = (Wolf) entity;
                 if (!wolf.isTamed()){return;}
-                increaseWolfEXP(wolf,1);
+                if (idExists(hurtByArray,WolfGeneralHandler.getWolfID(wolf))){
+                    increaseWolfEXP(wolf,1);
+                }
             }
         }
 
@@ -114,7 +163,7 @@ public class WolfGeneralHandler implements Listener {
         } else if (equipmentSlot == EquipmentSlot.OFF_HAND){
             material = player.getInventory().getItemInOffHand().getType();
         } else {
-            Main.logger.log(Level.WARNING,"Player right clicked a wolf with neither the main nor off hand?");
+            Main.logger.log(Level.WARNING,"Player right clicked a wolf with neither the main nor off hand? WolfGeneralHandler.CheckWolfStats error");
         }
         if (material == null){return;}
 
@@ -153,6 +202,7 @@ public class WolfGeneralHandler implements Listener {
 
         PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
         if (!wolfPDC.has(WolfLevel)){
+            wolfPDC.set(WolfID, PersistentDataType.INTEGER, random.nextInt());
             wolfPDC.set(WolfLevel, PersistentDataType.INTEGER,0);
             wolfPDC.set(WolfEXP, PersistentDataType.INTEGER, 0);
             return 0;
@@ -162,11 +212,26 @@ public class WolfGeneralHandler implements Listener {
 
     }
 
+    public static Wolf getClosestTamedWolf(Player player){
+        Location playerLocation = player.getLocation();
+        double shortest = 1000;
+        Entity closestWolf = null;
+        for (Entity entity : player.getNearbyEntities(10,10,10)){
+            double cur_dist = playerLocation.distance(entity.getLocation());
+            if ((entity instanceof Wolf) && (((Wolf) entity).isTamed()) && (cur_dist < shortest)){
+                shortest = cur_dist;
+                closestWolf = entity;
+            }
+        }
+        return (Wolf) closestWolf;
+    }
+
     public static int getWolfEXP(Wolf wolf){
         // Returns the EXP of the wolf.
         // If the wolf doesn't have a level or EXP, sets them to 0.
         PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
         if (!wolfPDC.has(WolfLevel) || !wolfPDC.has(WolfEXP)){
+            wolfPDC.set(WolfID, PersistentDataType.INTEGER, random.nextInt());
             wolfPDC.set(WolfLevel, PersistentDataType.INTEGER,0);
             wolfPDC.set(WolfEXP, PersistentDataType.INTEGER, 0);
             return 0;
@@ -175,20 +240,27 @@ public class WolfGeneralHandler implements Listener {
         return wolfPDC.get(WolfEXP, PersistentDataType.INTEGER);
     }
 
+    public static int getWolfID(Wolf wolf){
+        PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
+        if (!wolfPDC.has(WolfID)){
+            wolfPDC.set(WolfID, PersistentDataType.INTEGER, random.nextInt());
+        }
+        return wolfPDC.get(WolfID, PersistentDataType.INTEGER);
+    }
+
     public static void increaseWolfEXP(Wolf wolf, int amount){
 
         // Increases a Wolf's total EXP by amount passed
 
         PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
         int curEXP = getWolfEXP(wolf);
-        Random random = new Random();
-        if (random.nextDouble() <= 0.20){
+        if (random.nextDouble() <= 0.04){
             wolfPDC.set(WolfEXP,PersistentDataType.INTEGER,curEXP + amount);
         }
 
     }
 
-    static int convertEXPtoLevel(int exp){
+    public static int convertEXPtoLevel(int exp){
         if (exp < wolfLevels.get(1)){
             return 0;
         } else if (exp < wolfLevels.get(2)){

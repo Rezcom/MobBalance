@@ -6,7 +6,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import rezcom.mobbalance.wolves.WolfDebugCommand;
+import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.HashMap;

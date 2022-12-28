@@ -15,3 +15,11 @@ commands:
     description: Randomizes the color of collars of all tamed wolves in a World. Uses only Wild probabilities.
     usage: /MBWolfRandomize
     permission: MobBalance.WolfRandomize
+  MBWolfID:
+    description: Provides an ID for a wolf.
+    usage: /MBWolfID
+    permission: MobBalance.WolfID
+  MBWolfIDRandomize:
+    description: Assigns a random ID to all wolves in a World.
+    usage: /MBWolfIDRandomize
+    permission: MobBalance.WolfIDRandomize

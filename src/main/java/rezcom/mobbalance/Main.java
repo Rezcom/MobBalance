@@ -8,6 +8,7 @@ import rezcom.mobbalance.moblevels.SpiderHandler;
 import rezcom.mobbalance.moblevels.ZombieHandler;
 import rezcom.mobbalance.wolves.*;
 import rezcom.mobbalance.wolves.colors.*;
+import rezcom.mobbalance.wolves.commands.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,11 +45,18 @@ public final class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new BrownWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new YellowWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new BlackWolfHandler(),this);
+
+		// Wolf Eval Stick
+		getServer().getPluginManager().registerEvents(new WolfEvalStickHandler(), this);
+
+
 		// Register Commands
 		try {
 			this.getCommand("MBWolfDebug").setExecutor(new WolfDebugCommand());
 			this.getCommand("MBWolfEXP").setExecutor(new WolfEXPCommand());
 			this.getCommand("MBWolfRandomize").setExecutor(new WolfRandomizeCommand());
+			this.getCommand("MBWolfID").setExecutor(new WolfIDCommand());
+			this.getCommand("MBWolfIDRandomize").setExecutor(new WolfIDRandomizeCommand());
 		} catch (NullPointerException e){
 			logger.log(Level.SEVERE,"Commands weren't initialized correctly! It returned a nullpointer exception.");
 		}

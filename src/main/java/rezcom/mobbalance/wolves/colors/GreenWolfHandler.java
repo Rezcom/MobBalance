@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfDebugCommand;
+import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.*;
@@ -194,7 +194,7 @@ public class GreenWolfHandler implements Listener {
         }
         Player player = event.getEntity().getKiller();
         Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0, DyeColor.GREEN,8);
-        if (wolf == null){
+        if (wolf == null || wolf.isSitting()){
             if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
         }
@@ -215,7 +215,7 @@ public class GreenWolfHandler implements Listener {
         Random random = new Random();
         int level = WolfGeneralHandler.getWolfLevel(wolf);
         double dashChance = dashChanceMap.get(level);
-        if (random.nextDouble() <= dashChance){
+        if (random.nextDouble() <= dashChance && !wolf.isSitting()){
             applyDashToPlayer(player);
         }
     }
@@ -229,7 +229,7 @@ public class GreenWolfHandler implements Listener {
 
         Player player = (Player) event.getDamager();
         Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,30,DyeColor.GREEN,8);
-        if (wolf == null){
+        if (wolf == null || wolf.isSitting()){
             if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             return;
         }

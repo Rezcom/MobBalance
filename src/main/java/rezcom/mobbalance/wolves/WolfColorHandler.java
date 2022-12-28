@@ -13,6 +13,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import rezcom.mobbalance.Main;
+import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 
 import java.util.*;
 import java.util.logging.Level;

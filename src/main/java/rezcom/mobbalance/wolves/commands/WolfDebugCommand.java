@@ -1,4 +1,4 @@
-package rezcom.mobbalance.wolves;
+package rezcom.mobbalance.wolves.commands;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
