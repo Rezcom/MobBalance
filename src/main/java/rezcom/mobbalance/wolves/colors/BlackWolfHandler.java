@@ -1,5 +1,7 @@
 package rezcom.mobbalance.wolves.colors;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
+import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -142,25 +145,26 @@ public class BlackWolfHandler implements Listener {
                 // Crit
                 Main.sendDebugMessage("Crit should be applied",WolfDebugCommand.wolfDebug);
                 event.setDamage(eventDamage * nightCritDamage.get(level));
+
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLACK))).append(
+                        Component.text("  dealt critical damage!").color(TextColor.color(0x9e9e9e))));
+
             } else {
                 Main.sendDebugMessage("Crit shouldn't be applied",WolfDebugCommand.wolfDebug);
                 event.setDamage(eventDamage * nightDamage.get(level));
             }
 
             // Check to apply wither
-            boolean applyWither = false;
-            UUID ownerID = wolf.getOwnerUniqueId();
-            for (Player player : wolf.getLocation().getNearbyPlayers(8)){
-                UUID playerID = player.getUniqueId();
-                if (playerID.equals(ownerID)){
-                    if (player.getHealth() < 7){applyWither = true;}
-                }
-            }
+            boolean applyWither = WolfGeneralHandler.isNearbyOwner(wolf, 35, 8);
 
             if (applyWither){
                 Main.sendDebugMessage("Wither should be applied",WolfDebugCommand.wolfDebug);
+
                 LivingEntity victim = (LivingEntity) event.getEntity();
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER,60,witherLvlAmp.get(level)));
+
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLACK))).append(
+                        Component.text("  inflicted wither upon " + victim.getName() + ".").color(TextColor.color(0x9e9e9e))));
             }
 
         } else {

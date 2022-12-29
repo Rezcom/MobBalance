@@ -345,21 +345,22 @@ public class WolfGeneralHandler implements Listener {
 
     // Checks if a player owns a wolf nearby and is the correct level, and returns the wolf.
     // If not, returns null.
-    public static Wolf isNearbyOwnedWolf(Player player, int minLevel, DyeColor dyeColor, int radius){
-        if (player.getLevel() < minLevel){return null;}
+    public static List<Wolf> nearbyOwnedWolves(Player player, int minLevel, DyeColor dyeColor, int radius){
+        List<Wolf> outputList = new ArrayList<>();
+        if (player.getLevel() < minLevel){return outputList;}
 
-        for (LivingEntity livingEntity : player.getLocation().getNearbyLivingEntities(32)){
-            if (livingEntity instanceof Wolf && ((Wolf) livingEntity).isTamed() && ((Wolf) livingEntity).getCollarColor() == dyeColor){
+        for (LivingEntity livingEntity : player.getLocation().getNearbyLivingEntities(radius)){
+            if (isCorrectWolf(livingEntity,dyeColor)){
                 // We found a tamed wolf of the correct color.
                 Wolf wolf = (Wolf) livingEntity;
                 if (wolf.getOwnerUniqueId() != null && wolf.getOwnerUniqueId().equals(player.getUniqueId())){
-                    return wolf;
+                    outputList.add(wolf);
                 } else {
-                    return null;
+                    if (WolfDebugCommand.wolfDebug){Main.logger.log(Level.INFO,"No living entity nearby was a correct wolf.");}
                 }
             }
         }
-        return null;
+        return outputList;
     }
 
     public static boolean isCorrectWolf(Entity entity, DyeColor color){

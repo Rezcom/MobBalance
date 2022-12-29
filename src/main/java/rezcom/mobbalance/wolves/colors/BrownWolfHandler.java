@@ -1,5 +1,7 @@
 package rezcom.mobbalance.wolves.colors;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -17,6 +19,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import rezcom.mobbalance.Main;
+import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -114,6 +117,9 @@ public class BrownWolfHandler implements Listener {
             PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
             victimPDC.set(inAirExtraDamage, PersistentDataType.INTEGER,1);
 
+            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BROWN))).append(
+                    Component.text(" launched " + victim.getName() + " into the air!").color(TextColor.color(0x874f00))));
+
             //Main.sendDebugMessage("Thrown in air", WolfDebugCommand.wolfDebug);
 
             // Should armor be ripped off?
@@ -151,6 +157,7 @@ public class BrownWolfHandler implements Listener {
                     dropArmorItem(boots, livingVictim);
                     entityEquipment.setBoots(null);
                 }
+
 
             }
 

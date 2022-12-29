@@ -1,5 +1,8 @@
 package rezcom.mobbalance.wolves.colors;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -16,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import rezcom.mobbalance.Main;
+import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -148,10 +152,11 @@ public class GreenWolfHandler implements Listener {
         int selfSpeedAmp = speedAmpMap.get(level);
         Random random = new Random();
 
-        WolfDebugCommand.wolfDebugMessage(wolf, "Attempting speed buff of chance " + selfSpeedChance + " with amp " + selfSpeedAmp);
+
         if (random.nextDouble() <= selfSpeedChance){
             wolf.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,800,selfSpeedAmp));
-            WolfDebugCommand.wolfDebugMessage(wolf, "Applied speed buff to self");
+            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                    Component.text(" applied Speed Amp: " + selfSpeedAmp + " to itself.").color(TextColor.color(0x157501))));
         }
 
         double eventDamage = event.getDamage();
@@ -173,9 +178,12 @@ public class GreenWolfHandler implements Listener {
             Random random = new Random();
             WolfDebugCommand.wolfDebugMessage(wolf, "Attempting to evade with chance of " + evadeChance);
             if (random.nextDouble() <= evadeChance){
-                WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " successfully evaded.");
+
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                        Component.text(" evaded damage!").color(TextColor.color(0x157501))));
+
                 wolf.getWorld().playSound(wolf.getLocation(),Sound.ITEM_ARMOR_EQUIP_ELYTRA,1.2f,2.1f);
-                event.setDamage(0.0);
+                event.setCancelled(true);
                 return;
             }
         }
@@ -193,12 +201,18 @@ public class GreenWolfHandler implements Listener {
             return;
         }
         Player player = event.getEntity().getKiller();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0, DyeColor.GREEN,8);
-        if (wolf == null || wolf.isSitting()){
-            if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
-            return;
+        List<Wolf> wolfList = WolfGeneralHandler.nearbyOwnedWolves(player,0, DyeColor.GREEN,8);
+        for (Wolf wolf : wolfList){
+            if (wolf == null || wolf.isSitting()){
+                if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
+            } else {
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                        Component.text(" applied dash to " + player.getName() + " on Enemy Kill.").color(TextColor.color(0x157501))));
+                applyDashToPlayer(player);
+                return;
+            }
         }
-        applyDashToPlayer(player);
+
     }
 
     // Players can dash upon striking an enemy if a green wolf is nearby
@@ -208,16 +222,21 @@ public class GreenWolfHandler implements Listener {
             return;
         }
         Player player = (Player) event.getDamager();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,0,DyeColor.GREEN,8);
-        if (wolf == null){
-            return;
-        }
+        List<Wolf> wolfList = WolfGeneralHandler.nearbyOwnedWolves(player,0,DyeColor.GREEN,12);
+
         Random random = new Random();
-        int level = WolfGeneralHandler.getWolfLevel(wolf);
-        double dashChance = dashChanceMap.get(level);
-        if (random.nextDouble() <= dashChance && !wolf.isSitting()){
-            applyDashToPlayer(player);
+        for (Wolf wolf : wolfList){
+
+            int level = WolfGeneralHandler.getWolfLevel(wolf);
+            double dashChance = dashChanceMap.get(level);
+            if (random.nextDouble() <= dashChance && !wolf.isSitting()){
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                        Component.text(" applied dash to " + player.getName() + " on Player Strike (Non-Crit Proc).").color(TextColor.color(0x157501))));
+                applyDashToPlayer(player);
+                return;
+            }
         }
+
     }
 
     // Level 30+ players who do crits get a dash
@@ -228,12 +247,19 @@ public class GreenWolfHandler implements Listener {
         }
 
         Player player = (Player) event.getDamager();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,30,DyeColor.GREEN,8);
-        if (wolf == null || wolf.isSitting()){
-            if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
-            return;
+        List<Wolf> wolfList = WolfGeneralHandler.nearbyOwnedWolves(player,30,DyeColor.GREEN,8);
+
+        for (Wolf wolf : wolfList){
+            if (wolf == null || wolf.isSitting()){
+                if (WolfDebugCommand.wolfDebug && wolf == null){player.sendMessage("No wolf was found. Reason: Null wolf returned.");}
+                if (WolfDebugCommand.wolfDebug && wolf != null){player.sendMessage("No wolf was found. Reason: Wolf sitting returned.");}
+            } else {
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                        Component.text(" applied dash to " + player.getName() + " on Player Strike (Crit Proc).").color(TextColor.color(0x157501))));
+                applyDashToPlayer(player);
+                return;
+            }
         }
-        applyDashToPlayer(player);
 
     }
 
@@ -248,7 +274,7 @@ public class GreenWolfHandler implements Listener {
         if (currentlyInvulPlayers.contains(player.getUniqueId())){
             event.setDamage(0.0);
             player.getWorld().playSound(player.getLocation(),Sound.ITEM_ARMOR_EQUIP_ELYTRA,1.6f,2.1f);
-            if (WolfDebugCommand.wolfDebug){player.sendMessage("Evaded an attack!");}
+            player.sendMessage("Evaded an attack!");
         }
 
     }
@@ -275,13 +301,12 @@ public class GreenWolfHandler implements Listener {
         currentlyInvulPlayers.add(player.getUniqueId());
         currentlyDashingPlayers.add(player.getUniqueId());
 
-        new BukkitRunnable() {
-            @Override
-            public void run(){
-                currentlyDashingPlayers.remove(player.getUniqueId());
-                currentlyInvulPlayers.remove(player.getUniqueId());
-                if (WolfDebugCommand.wolfDebug){player.sendMessage("Removed from hashset, no longer dashing");}
-            }
-        }.runTaskLater(Main.thisPlugin,15); // Dash Ends after this many ticks
+        if (WolfDebugCommand.wolfDebug){player.sendMessage("Added to hashset, no longer dashing");}
+
+        Bukkit.getScheduler().runTaskLater(Main.thisPlugin, () -> {
+            currentlyDashingPlayers.remove(player.getUniqueId());
+            currentlyInvulPlayers.remove(player.getUniqueId());
+            if (WolfDebugCommand.wolfDebug){player.sendMessage("Removed from hashset, no longer dashing");}
+        },16L);
     }
 }

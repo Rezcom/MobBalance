@@ -1,5 +1,7 @@
 package rezcom.mobbalance.wolves.colors;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -8,10 +10,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -146,14 +150,20 @@ public class BlueWolfHandler implements Listener {
             // Wolf applies resistance to the pack.
             PotionEffect resistance = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,100,resistLevelAmplifier);
             WolfGeneralHandler.applyPackWithEffect(wolf, resistance, 32, true, true, true);
+            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
+                    Component.text(" applied Resistance with Amp " + resistLevelAmplifier + " to the pack.").color(TextColor.color(0x0023bd))));
+
             WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " succeeded.");
         }
 
         WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " attempt FireResist of " + fireChance);
         if (random.nextDouble() <= fireChance){
             // Wolf applies fire resistance to the pack.
-            PotionEffect fireResist = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 100, 0);
+            PotionEffect fireResist = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 200, 0);
             WolfGeneralHandler.applyPackWithEffect(wolf,fireResist,32,true,true,true);
+            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
+                    Component.text(" applied Fire Resistance to the pack.").color(TextColor.color(0x0023bd))));
+
             WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " succeeded.");
         }
     }
@@ -179,21 +189,25 @@ public class BlueWolfHandler implements Listener {
             return;
         }
         Player player = (Player) event.getEntity();
-        Wolf wolf = WolfGeneralHandler.isNearbyOwnedWolf(player,25,DyeColor.BLUE,32);
-        if (wolf == null){
-            return;
-        }
-        int level = WolfGeneralHandler.getWolfLevel(wolf);
-        double absorbChance = absorbHitChance.get(level);
+        List<Wolf> wolfList = WolfGeneralHandler.nearbyOwnedWolves(player,25,DyeColor.BLUE,32);
 
         Random random = new Random();
-        WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " attempting absorption chance of " + absorbChance);
-        if (random.nextDouble() <= absorbChance){
-            // Successful Absorption
-            player.addPotionEffect(absorbEffect);
-            event.setDamage(0.0);
-            WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " was successful");
+
+        for (Wolf wolf : wolfList){
+            int level = WolfGeneralHandler.getWolfLevel(wolf);
+            double absorbChance = absorbHitChance.get(level);
+            WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " attempting absorption chance of " + absorbChance);
+            if (random.nextDouble() <= absorbChance){
+                // Successful Absorption
+                player.addPotionEffect(absorbEffect);
+                event.setDamage(0.0);
+
+                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
+                        Component.text(" applied Absorption to " + player.getName() + ".").color(TextColor.color(0x0023bd))));
+            }
         }
+
+
     }
 
 }

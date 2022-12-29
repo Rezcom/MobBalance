@@ -1,11 +1,14 @@
 package rezcom.mobbalance.wolves.colors;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -122,11 +125,11 @@ public class RedWolfHandler implements Listener {
         if (random.nextDouble() <= actualCritChance){
             // Crit lands
             event.setDamage(eventDamage * critDamage.get(level));
-            WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + ": Crit Chance: " + actualCritChance + "; landed a crit and dealt " + event.getDamage());
+            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                    Component.text(" landed a critical hit!").color(TextColor.color(0xa60e00))));
         } else {
             // No crit
             event.setDamage(eventDamage * baseDamage.get(level));
-            WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + ": Crit Chance: " + actualCritChance + "; missed a crit and dealt " + event.getDamage());
         }
 
     }
