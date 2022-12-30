@@ -214,6 +214,7 @@ public class WolfCandleHandler implements Listener {
         wolf.addPotionEffect(fireResistance);
         wolf.addPotionEffect(tempAbsorb);
 
+        // Play scary noises
         world.playSound(wolf.getLocation(), Sound.ITEM_TRIDENT_THUNDER,2.5f,0.50f);
         world.playSound(wolf.getLocation(), Sound.ENTITY_WOLF_HOWL,0.4f,1.25f);
         world.playSound(wolf.getLocation(), Sound.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE, 2.0f, 1.3f);
