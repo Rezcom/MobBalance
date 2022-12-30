@@ -86,7 +86,7 @@ public class ZombieHandler implements Listener {
 	void onZombieHit(EntityDamageByEntityEvent event){
 		// Whenever a player gets hit by a zombie, they should have a chance to receive hunger.
 
-		if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Zombie)){
+		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Zombie)){
 			// Player wasn't was who was hit, or attacker isn't a zombie.
 			return;
 		}

@@ -45,6 +45,7 @@ public final class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new BrownWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new YellowWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new BlackWolfHandler(),this);
+		getServer().getPluginManager().registerEvents(new LightBlueWolfHandler(),this);
 
 		// Wolf Eval Stick
 		getServer().getPluginManager().registerEvents(new WolfEvalCandleHandler(), this);

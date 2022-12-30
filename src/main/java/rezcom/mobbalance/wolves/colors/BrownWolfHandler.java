@@ -205,13 +205,8 @@ public class BrownWolfHandler implements Listener {
     }
 
     @EventHandler
-    void onWolfGetsHit(EntityDamageEvent event){
+    void onWolfGetsHit(EntityDamageByEntityEvent event){
         if (!WolfGeneralHandler.isCorrectWolf(event.getEntity(),DyeColor.BROWN)){
-            return;
-        }
-
-        if (event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION){
-            event.setCancelled(true);
             return;
         }
 
@@ -220,6 +215,16 @@ public class BrownWolfHandler implements Listener {
 
         double eventDamage = event.getDamage();
         event.setDamage(eventDamage * (1 - damageResist.get(level)));
+    }
+
+    @EventHandler
+    void onWolfExploded(EntityDamageEvent event){
+        if (!WolfGeneralHandler.isCorrectWolf(event.getEntity(),DyeColor.BROWN)){
+            return;
+        }
+        if (event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION){
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler

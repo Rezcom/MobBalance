@@ -102,16 +102,16 @@ public class GreenWolfHandler implements Listener {
        put(0, 0.0);
        put(1, 0.04);
        put(2, 0.10);
-       put(3, 0.16);
-       put(4, 0.22);
-       put(5, 0.28);
-       put(6, 0.34);
-       put(7, 0.40);
-       put(8, 0.40);
-       put(9, 0.40);
-       put(10,0.45);
-       put(11,0.45);
-       put(12,0.45);
+       put(3, 0.18);
+       put(4, 0.26);
+       put(5, 0.36);
+       put(6, 0.46);
+       put(7, 0.50);
+       put(8, 0.52);
+       put(9, 0.54);
+       put(10,0.55);
+       put(11,0.56);
+       put(12,0.57);
 
     }};
 

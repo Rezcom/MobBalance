@@ -110,14 +110,14 @@ public class CreeperHandler implements Listener {
 			creeper.addPotionEffect(strongResist);
 			creeper.addPotionEffect(fireResist);
 			creeper.setPowered(random.nextDouble() <= 0.75);
-			creeper.setMaxFuseTicks(15);
+			creeper.setMaxFuseTicks(20);
 		} else if (level == 12){
 			creeper.addPotionEffect(strongSpeed);
 			creeper.addPotionEffect(strongResist);
 			creeper.addPotionEffect(fireResist);
 			creeper.addPotionEffect(invisibility);
 			creeper.setPowered(true);
-			creeper.setMaxFuseTicks(15);
+			creeper.setMaxFuseTicks(20);
 		}
 
 		if (level > 6){

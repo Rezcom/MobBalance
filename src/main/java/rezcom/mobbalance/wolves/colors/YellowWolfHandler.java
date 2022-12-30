@@ -91,22 +91,28 @@ public class YellowWolfHandler implements Listener {
 
 
     @EventHandler
-    void onWolfGetsHit(EntityDamageEvent event){
+    void onWolfGetsHit(EntityDamageByEntityEvent event){
         if (!WolfGeneralHandler.isCorrectWolf(event.getEntity(), DyeColor.YELLOW)){
             return;
         }
 
-        // Immune to lightning
-        if (event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING || event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK){
-            event.setCancelled(true);
-            return;
-        }
 
         Wolf wolf = (Wolf) event.getEntity();
         int level = WolfGeneralHandler.getWolfLevel(wolf);
 
         double eventDamage = event.getDamage();
         event.setDamage(eventDamage * (1 - damageResist.get(level)));
+    }
+
+    @EventHandler
+    void onWolfHitByLightning(EntityDamageEvent event){
+        if (!WolfGeneralHandler.isCorrectWolf(event.getEntity(),DyeColor.YELLOW)){
+            return;
+        }
+        // Immune to lightning
+        if (event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING || event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK){
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler

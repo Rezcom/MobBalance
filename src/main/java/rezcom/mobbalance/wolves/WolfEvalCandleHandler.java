@@ -20,7 +20,6 @@ import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -149,7 +148,7 @@ public class WolfEvalCandleHandler implements Listener {
        put(DyeColor.YELLOW, "Timid");
        put(DyeColor.BLACK, "Vindictive");
        put(DyeColor.WHITE, "Insightful");
-       put(DyeColor.LIGHT_BLUE, "Arrogant");
+       put(DyeColor.LIGHT_BLUE, "Cunning");
        put(DyeColor.GRAY, "Skeptical");
        put(DyeColor.PURPLE, "Idealistic");
        put(DyeColor.ORANGE, "Brazen");
@@ -253,8 +252,11 @@ public class WolfEvalCandleHandler implements Listener {
 
         Bukkit.getScheduler().runTaskLater(Main.thisPlugin,() -> {
             double eventDamage = Math.round(event.getDamage() * 100.0)/100.0;
-            broadcastCandleMessage(wolf,Component.text(wolf.getName()).color(TextColor.color(dyeColorLightTextMap.get(dyeColor))).append(
-                    Component.text(" dealt " + eventDamage + " damage to " + victim.getName() + ".").color(TextColor.color(0xffffff))));
+            if (eventDamage > 0.0){
+                broadcastCandleMessage(wolf,Component.text(wolf.getName()).color(TextColor.color(dyeColorLightTextMap.get(dyeColor))).append(
+                        Component.text(" dealt " + eventDamage + " damage to " + victim.getName() + ".").color(TextColor.color(0xffffff))));
+
+            }
 
         }, 2L);
 
@@ -271,8 +273,11 @@ public class WolfEvalCandleHandler implements Listener {
 
         Bukkit.getScheduler().runTaskLater(Main.thisPlugin, () -> {
             double eventDamage = Math.round(event.getDamage() * 100.0)/100.0;
-            broadcastCandleMessage(wolf,Component.text(wolf.getName()).color(TextColor.color(dyeColorLightTextMap.get(dyeColor))).append(
-                    Component.text(" received " + eventDamage + " damage.").color(TextColor.color(0xffffff))));
+            if (eventDamage > 0.0){
+                broadcastCandleMessage(wolf,Component.text(wolf.getName()).color(TextColor.color(dyeColorLightTextMap.get(dyeColor))).append(
+                        Component.text(" received " + eventDamage + " damage.").color(TextColor.color(0xffffff))));
+            }
+
         },2L);
 
     }

@@ -170,12 +170,13 @@ public class BlueWolfHandler implements Listener {
 
     @EventHandler
     void onWolfGetsHit(EntityDamageByEntityEvent event){
-        if (!(event.getEntity() instanceof Wolf) || !(((Wolf) event.getEntity()).isTamed()) || !(((Wolf) event.getEntity()).getCollarColor() == DyeColor.BLUE)){
+        if (!WolfGeneralHandler.isCorrectWolf(event.getEntity(),DyeColor.BLUE)){
             // Do nothing
             return;
         }
 
         Wolf wolf = (Wolf) event.getEntity();
+
         int level = WolfGeneralHandler.getWolfLevel(wolf);
 
         double eventDamage = event.getDamage();

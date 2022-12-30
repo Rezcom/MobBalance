@@ -104,16 +104,22 @@ public class BlackWolfHandler implements Listener {
     }};
 
     @EventHandler
-    void onWolfGetsHit(EntityDamageEvent event){
+    void onWolfWither(EntityDamageEvent event){
+        if (!(WolfGeneralHandler.isCorrectWolf(event.getEntity(),DyeColor.BLACK))){
+            return;
+        }
+        if (event.getCause() == EntityDamageEvent.DamageCause.WITHER){
+            event.setDamage(0.0);
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    void onWolfGetsHit(EntityDamageByEntityEvent event){
         if (!WolfGeneralHandler.isCorrectWolf(event.getEntity(), DyeColor.BLACK)){
             return;
         }
 
-        // Immune to Wither
-        if (event.getCause() == EntityDamageEvent.DamageCause.WITHER){
-            event.setCancelled(true);
-            return;
-        }
 
         Wolf wolf = (Wolf) event.getEntity();
         int level = WolfGeneralHandler.getWolfLevel(wolf);
