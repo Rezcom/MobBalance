@@ -9,10 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.*;
@@ -131,7 +131,7 @@ public class LightBlueWolfHandler implements Listener {
             ball.setVelocity(new Vector(0,-1.2f,0));
             ball.setSilent(true);
 
-            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.LIGHT_BLUE))).append(
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.LIGHT_BLUE))).append(
                     Component.text(" instigated " + victim.getName() + " towards " + victim.getName()).color(TextColor.color(0x3c85bd))));
         }
         double eventDamage = event.getDamage();
@@ -161,7 +161,11 @@ public class LightBlueWolfHandler implements Listener {
             return;
         }
 
+        Wolf wolf = (Wolf) event.getEntity();
+
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL){
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.LIGHT_BLUE))).append(
+                    Component.text(" avoided fall damage.").color(TextColor.color(0x3c85bd))));
             event.setCancelled(true);
         }
     }

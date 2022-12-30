@@ -1,5 +1,9 @@
 package rezcom.mobbalance.wolves;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -55,8 +59,6 @@ public class WolfColorHandler implements Listener {
         put(DyeColor.LIME,Material.CHORUS_FRUIT);
         put(DyeColor.MAGENTA,Material.GLISTERING_MELON_SLICE);
     }};
-
-
 
 
     @EventHandler
@@ -221,6 +223,78 @@ public class WolfColorHandler implements Listener {
         childPDC.set(WolfGeneralHandler.WolfLevel,PersistentDataType.INTEGER,0);
         childPDC.set(WolfGeneralHandler.WolfEXP,PersistentDataType.INTEGER,0);
 
+    }
+
+
+    // TEXT-RELEVANT METHODS - FOR WHEN COLOR MATTERS IN LORE TEXT AND SUCH //
+
+    public static final Map<DyeColor,Integer> dyeColorTextColorMap = new HashMap<DyeColor, Integer>(){{
+        put(DyeColor.BLACK, 0x454545);
+        put(DyeColor.RED, 0xed3f34);
+        put(DyeColor.GREEN, 0x83ad1c);
+        put(DyeColor.BROWN, 0xa6693d);
+        put(DyeColor.BLUE, 0x4953d1);
+        put(DyeColor.PURPLE, 0x9f3ad6);
+        put(DyeColor.CYAN, 0x169C9C);
+        put(DyeColor.LIGHT_GRAY, 0xbababa);
+        put(DyeColor.GRAY,0x747474);
+        put(DyeColor.PINK, 0xF38BAA);
+        put(DyeColor.LIME, 0x80C71F);
+        put(DyeColor.YELLOW, 0xFED83D);
+        put(DyeColor.LIGHT_BLUE, 0x40c9f5);
+        put(DyeColor.MAGENTA, 0xeb5bdf);
+        put(DyeColor.ORANGE, 0xF9801D);
+        put(DyeColor.WHITE, 0xF9FFFE);
+    }};
+
+    public static final Map<DyeColor,Integer> dyeColorLightTextMap = new HashMap<DyeColor, Integer>(){{
+        put(DyeColor.BLACK, 0xc7c7c7);
+        put(DyeColor.RED, 0xffa49e);
+        put(DyeColor.GREEN, 0xb2f590);
+        put(DyeColor.BROWN, 0xb88763);
+        put(DyeColor.BLUE, 0xbcbfeb);
+        put(DyeColor.PURPLE, 0xeed2fc);
+        put(DyeColor.CYAN, 0xbae8e8);
+        put(DyeColor.LIGHT_GRAY, 0xe0e0e0);
+        put(DyeColor.GRAY, 0xdbdbdb);
+        put(DyeColor.PINK, 0xffd1df);
+        put(DyeColor.LIME, 0xd7f2b1);
+        put(DyeColor.YELLOW, 0xfff4c7);
+        put(DyeColor.LIGHT_BLUE, 0xbfefff);
+        put(DyeColor.MAGENTA, 0xf7cbf7);
+        put(DyeColor.ORANGE, 0xfccca4);
+        put(DyeColor.WHITE, 0xffffff);
+    }};
+
+    public static final Map<DyeColor,String> dyeColorToStringMap = new HashMap<DyeColor, String>(){{
+        put(DyeColor.RED, "Courageous");
+        put(DyeColor.BLUE, "Honorable");
+        put(DyeColor.GREEN, "Clever");
+        put(DyeColor.BROWN, "Determined");
+        put(DyeColor.YELLOW, "Timid");
+        put(DyeColor.BLACK, "Vindictive");
+        put(DyeColor.WHITE, "Insightful");
+        put(DyeColor.LIGHT_BLUE, "Cunning");
+        put(DyeColor.GRAY, "Skeptical");
+        put(DyeColor.PURPLE, "Idealistic");
+        put(DyeColor.ORANGE, "Brazen");
+        put(DyeColor.PINK, "Reserved");
+        put(DyeColor.CYAN, "Acquisitive");
+        put(DyeColor.LIGHT_GRAY, "Anxious");
+        put(DyeColor.LIME, "Mischievous");
+        put(DyeColor.MAGENTA, "Gracious");
+    }};
+    public static final TextComponent noWolfText = Component.text("None. Right click a tamed wolf to select.").color(TextColor.color(0xffffff));
+
+    public static ArrayList<Component> generateSelectionLoreText(Wolf wolf){
+        int wolfID = WolfGeneralHandler.getWolfID(wolf);
+        DyeColor dyeColor = wolf.getCollarColor();
+        return new ArrayList<>(Arrays.asList(
+                Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(dyeColor))).decoration(TextDecoration.ITALIC,false),
+                Component.text(WolfColorHandler.dyeColorToStringMap.get(dyeColor)).color(TextColor.color(WolfColorHandler.dyeColorTextColorMap.get(dyeColor))).decoration(TextDecoration.ITALIC,false),
+                Component.text(""),
+                Component.text("ID: " + wolfID).color(TextColor.color(0xffffff)).decoration(TextDecoration.ITALIC,true)
+        ));
     }
 
 

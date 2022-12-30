@@ -4,12 +4,14 @@ import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -25,6 +27,9 @@ public class WolfGeneralHandler implements Listener {
     public static final NamespacedKey WolfEXP = new NamespacedKey(Main.thisPlugin, "WolfEXP");
     public static final NamespacedKey hurtByWolf = new NamespacedKey(Main.thisPlugin, "hurtByWolf");
     public static final NamespacedKey WolfID = new NamespacedKey(Main.thisPlugin, "WolfID");
+
+    // Wolf Items that shouldn't be placed
+    public static final NamespacedKey unplaceableWolfItem = new NamespacedKey(Main.thisPlugin,"unplaceableWolfItem");
 
     public static boolean wolfIDDebug = false;
 
@@ -56,6 +61,7 @@ public class WolfGeneralHandler implements Listener {
         if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Wolf) || !(((Wolf) event.getEntity()).isTamed())){
             return;
         }
+
 
         Wolf wolf = (Wolf) event.getEntity();
         Player player = (Player) event.getDamager();
@@ -370,6 +376,17 @@ public class WolfGeneralHandler implements Listener {
         }
         Wolf wolf = (Wolf) entity;
         return wolf.isTamed() && (wolf.getCollarColor() == color);
+    }
+
+    @EventHandler
+    void onPlayerPlaceUnplaceable(BlockPlaceEvent event){
+        // Prevent a player from actually placing the eval candles
+        ItemStack item = event.getItemInHand();
+        ItemMeta itemMeta = item.getItemMeta();
+        PersistentDataContainer itemPDC = itemMeta.getPersistentDataContainer();
+        if (itemPDC.has(unplaceableWolfItem)){
+            event.setCancelled(true);
+        }
     }
 
 }

@@ -15,7 +15,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -139,7 +140,7 @@ public class YellowWolfHandler implements Listener {
                 Entity victim = event.getEntity();
                 victim.getWorld().strikeLightning(victim.getLocation());
 
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.YELLOW))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.YELLOW))).append(
                         Component.text(" summoned lightning at " + victim.getName() + "!").color(TextColor.color(0xd4c200))));
 
                 Main.sendDebugMessage("Dealt " + event.getDamage() + " damage.", WolfDebugCommand.wolfDebug);

@@ -19,7 +19,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -117,7 +118,7 @@ public class BrownWolfHandler implements Listener {
             PersistentDataContainer victimPDC = victim.getPersistentDataContainer();
             victimPDC.set(inAirExtraDamage, PersistentDataType.INTEGER,1);
 
-            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BROWN))).append(
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.BROWN))).append(
                     Component.text(" launched " + victim.getName() + " into the air!").color(TextColor.color(0x874f00))));
 
             //Main.sendDebugMessage("Thrown in air", WolfDebugCommand.wolfDebug);

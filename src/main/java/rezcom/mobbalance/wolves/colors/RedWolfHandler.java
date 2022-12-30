@@ -8,7 +8,8 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -125,7 +126,7 @@ public class RedWolfHandler implements Listener {
         if (random.nextDouble() <= actualCritChance){
             // Crit lands
             event.setDamage(eventDamage * critDamage.get(level));
-            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
                     Component.text(" landed a critical hit!").color(TextColor.color(0xa60e00))));
         } else {
             // No crit

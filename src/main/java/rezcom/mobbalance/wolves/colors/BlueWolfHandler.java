@@ -10,7 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -150,8 +151,8 @@ public class BlueWolfHandler implements Listener {
             // Wolf applies resistance to the pack.
             PotionEffect resistance = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,100,resistLevelAmplifier);
             WolfGeneralHandler.applyPackWithEffect(wolf, resistance, 32, true, true, true);
-            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
-                    Component.text(" applied Resistance with Amp " + resistLevelAmplifier + " to the pack.").color(TextColor.color(0x0023bd))));
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
+                    Component.text(" applied Resistance " + (resistLevelAmplifier + 1) + " to the pack.").color(TextColor.color(0x0023bd))));
 
             WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " succeeded.");
         }
@@ -161,7 +162,7 @@ public class BlueWolfHandler implements Listener {
             // Wolf applies fire resistance to the pack.
             PotionEffect fireResist = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 200, 0);
             WolfGeneralHandler.applyPackWithEffect(wolf,fireResist,32,true,true,true);
-            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
                     Component.text(" applied Fire Resistance to the pack.").color(TextColor.color(0x0023bd))));
 
             WolfDebugCommand.wolfDebugMessage(wolf, wolf.getName() + " succeeded.");
@@ -203,7 +204,7 @@ public class BlueWolfHandler implements Listener {
                 player.addPotionEffect(absorbEffect);
                 event.setDamage(0.0);
 
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.BLUE))).append(
                         Component.text(" applied Absorption to " + player.getName() + ".").color(TextColor.color(0x0023bd))));
             }
         }

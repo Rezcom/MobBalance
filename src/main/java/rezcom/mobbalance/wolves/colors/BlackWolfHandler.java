@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,13 +12,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class BlackWolfHandler implements Listener {
 
@@ -152,7 +151,7 @@ public class BlackWolfHandler implements Listener {
                 Main.sendDebugMessage("Crit should be applied",WolfDebugCommand.wolfDebug);
                 event.setDamage(eventDamage * nightCritDamage.get(level));
 
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLACK))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.BLACK))).append(
                         Component.text("  dealt critical damage!").color(TextColor.color(0x9e9e9e))));
 
             } else {
@@ -169,7 +168,7 @@ public class BlackWolfHandler implements Listener {
                 LivingEntity victim = (LivingEntity) event.getEntity();
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER,60,witherLvlAmp.get(level)));
 
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(DyeColor.BLACK))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(DyeColor.BLACK))).append(
                         Component.text("  inflicted wither upon " + victim.getName() + ".").color(TextColor.color(0x9e9e9e))));
             }
 

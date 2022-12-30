@@ -86,7 +86,7 @@ public class ZombieHandler implements Listener {
 	void onZombieHit(EntityDamageByEntityEvent event){
 		// Whenever a player gets hit by a zombie, they should have a chance to receive hunger.
 
-		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Zombie)){
+		if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Zombie)){
 			// Player wasn't was who was hit, or attacker isn't a zombie.
 			return;
 		}
@@ -115,6 +115,11 @@ public class ZombieHandler implements Listener {
 		} else if (level <= 12){
 			event.setDamage(eventDamage * (weaponEquipped ? 2.0 : 2.25));
 			livingEntity.addPotionEffect(strongHunger);
+		}
+
+		// High level mobs have reduced damage
+		if (level >= 4 && !(livingEntity instanceof Player)){
+			event.setDamage(eventDamage * 0.50);
 		}
 
 	}

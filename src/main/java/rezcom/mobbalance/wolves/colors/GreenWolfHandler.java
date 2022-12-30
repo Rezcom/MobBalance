@@ -16,10 +16,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import rezcom.mobbalance.Main;
-import rezcom.mobbalance.wolves.WolfEvalCandleHandler;
+import rezcom.mobbalance.wolves.WolfColorHandler;
+import rezcom.mobbalance.wolves.WolfEvalSignetHandler;
 import rezcom.mobbalance.wolves.commands.WolfDebugCommand;
 import rezcom.mobbalance.wolves.WolfGeneralHandler;
 
@@ -155,8 +155,8 @@ public class GreenWolfHandler implements Listener {
 
         if (random.nextDouble() <= selfSpeedChance){
             wolf.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,800,selfSpeedAmp));
-            WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
-                    Component.text(" applied Speed Amp: " + selfSpeedAmp + " to itself.").color(TextColor.color(0x157501))));
+            WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                    Component.text(" applied Speed " + (selfSpeedAmp + 1) + " to itself.").color(TextColor.color(0x157501))));
         }
 
         double eventDamage = event.getDamage();
@@ -179,7 +179,7 @@ public class GreenWolfHandler implements Listener {
             WolfDebugCommand.wolfDebugMessage(wolf, "Attempting to evade with chance of " + evadeChance);
             if (random.nextDouble() <= evadeChance){
 
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
                         Component.text(" evaded damage!").color(TextColor.color(0x157501))));
 
                 wolf.getWorld().playSound(wolf.getLocation(),Sound.ITEM_ARMOR_EQUIP_ELYTRA,1.2f,2.1f);
@@ -206,7 +206,7 @@ public class GreenWolfHandler implements Listener {
             if (wolf == null || wolf.isSitting()){
                 if (WolfDebugCommand.wolfDebug){player.sendMessage("No wolf was found.");}
             } else {
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
                         Component.text(" applied dash to " + player.getName() + " on Enemy Kill.").color(TextColor.color(0x157501))));
                 applyDashToPlayer(player);
                 return;
@@ -230,7 +230,7 @@ public class GreenWolfHandler implements Listener {
             int level = WolfGeneralHandler.getWolfLevel(wolf);
             double dashChance = dashChanceMap.get(level);
             if (random.nextDouble() <= dashChance && !wolf.isSitting()){
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
                         Component.text(" applied dash to " + player.getName() + " on Player Strike (Non-Crit Proc).").color(TextColor.color(0x157501))));
                 applyDashToPlayer(player);
                 return;
@@ -254,7 +254,7 @@ public class GreenWolfHandler implements Listener {
                 if (WolfDebugCommand.wolfDebug && wolf == null){player.sendMessage("No wolf was found. Reason: Null wolf returned.");}
                 if (WolfDebugCommand.wolfDebug && wolf != null){player.sendMessage("No wolf was found. Reason: Wolf sitting returned.");}
             } else {
-                WolfEvalCandleHandler.broadcastCandleMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfEvalCandleHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
+                WolfEvalSignetHandler.broadcastSignetMessage(wolf, Component.text(wolf.getName()).color(TextColor.color(WolfColorHandler.dyeColorLightTextMap.get(wolf.getCollarColor()))).append(
                         Component.text(" applied dash to " + player.getName() + " on Player Strike (Crit Proc).").color(TextColor.color(0x157501))));
                 applyDashToPlayer(player);
                 return;
