@@ -38,22 +38,23 @@ public class LightBlueWolfHandler implements Listener {
         put(12,1.25);
     }};
 
-    // Damage Resist
-    // 0.60 means resists 60% damage, so only take 40% damage
+    // Damage Resistance
+    // Each double refers to how much damage is RESISTED, so 0.6 means the wolf resists
+    // 60% of the damage; aka takes only 40% damage.
     private static final Map<Integer,Double> damageResist = new HashMap<Integer,Double>(){{
         put(0, 0.60);
-        put(1, 0.65);
-        put(2, 0.65);
-        put(3, 0.70);
-        put(4, 0.70);
-        put(5, 0.75);
-        put(6, 0.75);
-        put(7, 0.80);
-        put(8, 0.80);
-        put(9, 0.80);
-        put(10,0.85);
-        put(11,0.85);
-        put(12,0.85);
+        put(1, 0.60);
+        put(2, 0.60);
+        put(3, 0.65);
+        put(4, 0.65);
+        put(5, 0.70);
+        put(6, 0.70);
+        put(7, 0.75);
+        put(8, 0.75);
+        put(9, 0.75);
+        put(10,0.80);
+        put(11,0.80);
+        put(12,0.80);
     }};
 
     private static final Map<Integer,Integer> numOtherTargetsMap = new HashMap<Integer, Integer>(){{

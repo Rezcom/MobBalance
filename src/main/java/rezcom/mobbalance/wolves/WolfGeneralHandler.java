@@ -37,18 +37,18 @@ public class WolfGeneralHandler implements Listener {
 
     public static final Map<Integer,Integer> wolfLevels = new HashMap<Integer,Integer>(){{
         put(0,0);
-        put(1,10);
-        put(2,25);
-        put(3,47);
-        put(4,77);
-        put(5,120);
-        put(6,178);
-        put(7,250);
-        put(8,345);
-        put(9,463);
-        put(10,608);
-        put(11,785);
-        put(12,1000);
+        put(1,200);
+        put(2,500);
+        put(3,940);
+        put(4,1540);
+        put(5,2400);
+        put(6,3560);
+        put(7,5000);
+        put(8,6900);
+        put(9,9260);
+        put(10,12160);
+        put(11,15700);
+        put(12,20000);
     }};
 
 
@@ -261,9 +261,7 @@ public class WolfGeneralHandler implements Listener {
 
         PersistentDataContainer wolfPDC = wolf.getPersistentDataContainer();
         int curEXP = getWolfEXP(wolf);
-        if (random.nextDouble() <= 0.04){
-            wolfPDC.set(WolfEXP,PersistentDataType.INTEGER,curEXP + amount);
-        }
+        wolfPDC.set(WolfEXP,PersistentDataType.INTEGER,curEXP + amount);
 
     }
 
@@ -386,6 +384,18 @@ public class WolfGeneralHandler implements Listener {
         PersistentDataContainer itemPDC = itemMeta.getPersistentDataContainer();
         if (itemPDC.has(unplaceableWolfItem)){
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    void onWolfTakeEnvDamage(EntityDamageEvent event){
+        if (!(event.getEntity() instanceof Wolf) || !((Wolf) event.getEntity()).isTamed()){
+            return;
+        }
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL || event.getCause() == EntityDamageEvent.DamageCause.FALLING_BLOCK || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK || event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION){
+            double eventDamage = event.getDamage();
+            event.setDamage(eventDamage * 0.30);
         }
     }
 

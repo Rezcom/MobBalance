@@ -276,7 +276,7 @@ public class WolfColorHandler implements Listener {
         put(DyeColor.WHITE, "Insightful");
         put(DyeColor.LIGHT_BLUE, "Cunning");
         put(DyeColor.GRAY, "Skeptical");
-        put(DyeColor.PURPLE, "Idealistic");
+        put(DyeColor.PURPLE, "Conscientious");
         put(DyeColor.ORANGE, "Brazen");
         put(DyeColor.PINK, "Reserved");
         put(DyeColor.CYAN, "Acquisitive");

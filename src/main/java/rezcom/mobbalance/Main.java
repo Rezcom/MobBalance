@@ -46,6 +46,7 @@ public final class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new YellowWolfHandler(), this);
 		getServer().getPluginManager().registerEvents(new BlackWolfHandler(),this);
 		getServer().getPluginManager().registerEvents(new LightBlueWolfHandler(),this);
+		getServer().getPluginManager().registerEvents(new PurpleWolfHandler(), this);
 
 		// Wolf New Items
 		getServer().getPluginManager().registerEvents(new WolfEvalSignetHandler(), this);
@@ -59,8 +60,9 @@ public final class Main extends JavaPlugin {
 			this.getCommand("MBWolfRandomize").setExecutor(new WolfRandomizeCommand());
 			this.getCommand("MBWolfID").setExecutor(new WolfIDCommand());
 			this.getCommand("MBWolfIDRandomize").setExecutor(new WolfIDRandomizeCommand());
+			this.getCommand("MBWolfForceColor").setExecutor(new WolfForceColorCommand());
 		} catch (NullPointerException e){
-			logger.log(Level.SEVERE,"Commands weren't initialized correctly! It returned a nullpointer exception.");
+			logger.log(Level.SEVERE,"Commands weren't initialized correctly! It returned a null pointer exception.");
 		}
 
 		logger.log(Level.INFO,"Plugin Initialized");
